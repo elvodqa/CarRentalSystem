@@ -1,9 +1,14 @@
 package Database;
 
+import Models.Car;
+import Models.RentalPeriod;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Database {
     public final String DbName = "RentalSystem";
@@ -80,4 +85,157 @@ public class Database {
     }
 
 
+    // Returns true on success, false on failure
+    public boolean createUser(String firstName, String lastName, String email, String password) {
+        String insertSql = "INSERT INTO " + UserTableName +
+                " (firstName, lastName, email, password) VALUES ('" +
+                firstName + "', '" + lastName + "', '" + email + "', '" + password + "')";
+        try (Statement statement = conn.createStatement()) {
+            statement.executeUpdate(insertSql);
+            System.out.println("New user added: " + firstName + " " + lastName);
+            return true;
+        } catch (SQLException e) {
+            System.out.println("Error adding new user: " + e.getMessage());
+            return false;
+        }
+    }
+
+    // Returns true if user with given email and password are true, else false
+    public boolean validateUser(String email, String password) {
+        String querySql = "SELECT * FROM " + UserTableName +
+                " WHERE email = '" + email + "' AND password = '" + password + "'";
+        try (Statement statement = conn.createStatement();
+             var resultSet = statement.executeQuery(querySql)) {
+            if (resultSet.next()) {
+                System.out.println("User validated: " + email);
+                return true;
+            } else {
+                System.out.println("Invalid credentials for user: " + email);
+                return false;
+            }
+        } catch (SQLException e) {
+            System.out.println("Error validating user: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean createCar(String name, String model, String plate, String color, double price) {
+        String insertSql = "INSERT INTO " + CarTableName +
+                " (name, model, plate, color, price) VALUES ('" +
+                name + "', '" + model + "', '" + plate + "', '" + color + "', " + price + ")";
+        try (Statement statement = conn.createStatement()) {
+            statement.executeUpdate(insertSql);
+            System.out.println("New car added: " + name + " " + model);
+            return true;
+        } catch (SQLException e) {
+            System.out.println("Error adding new car: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public List<Car> getAllCars() {
+        List<Car> cars = new ArrayList<>();
+        String querySql = "SELECT * FROM " + CarTableName;
+        try (Statement statement = conn.createStatement();
+             var resultSet = statement.executeQuery(querySql)) {
+            while (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                String name = resultSet.getString("name");
+                String model = resultSet.getString("model");
+                String plate = resultSet.getString("plate");
+                String color = resultSet.getString("color");
+                double price = resultSet.getDouble("price");
+                cars.add(new Car(id, name, model, plate, color, price));
+            }
+            System.out.println("Retrieved all cars from database.");
+        } catch (SQLException e) {
+            System.out.println("Error retrieving cars: " + e.getMessage());
+        }
+        return cars;
+    }
+
+    public boolean createRentalPeriod(int userId, int carId, String startDate, String endDate) {
+        String insertSql = "INSERT INTO " + RentalPeriodTableName +
+                " (userId, carId, startDate, endDate) VALUES (" +
+                userId + ", " + carId + ", DATE('" + startDate + "'), DATE('" + endDate + "'))";
+        try (Statement statement = conn.createStatement()) {
+            statement.executeUpdate(insertSql);
+            System.out.println("New rental period added for user ID: " + userId);
+            return true;
+        } catch (SQLException e) {
+            System.out.println("Error adding new rental period: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public String generateInvoice(int rentalId) {
+        String stuffSql = "SELECT r.id, u.firstName, u.lastName, c.name, c.model, r.startDate, r.endDate, c.price " +
+                "FROM " + RentalPeriodTableName + " r " +
+                "JOIN " + UserTableName + " u ON r.userId = u.id " +
+                "JOIN " + CarTableName + " c ON r.carId = c.id " +
+                "WHERE r.id = " + rentalId;
+        String invoice = "";
+        try (Statement statement = conn.createStatement();
+                var resultSet = statement.executeQuery(stuffSql)) {
+            if (resultSet.next()) {
+                String firstName = resultSet.getString("firstName");
+                String lastName = resultSet.getString("lastName");
+                String carName = resultSet.getString("name");
+                String carModel = resultSet.getString("model");
+                String startDate = resultSet.getString("startDate");
+                String endDate = resultSet.getString("endDate");
+                double pricePerDay = resultSet.getDouble("price");
+                // Calculate total days
+                java.sql.Date start = java.sql.Date.valueOf(startDate);
+                java.sql.Date end = java.sql.Date.valueOf(endDate);
+                long diff = end.getTime() - start.getTime();
+                int totalDays = (int) (diff / (1000 * 60 * 60 * 24)) + 1;
+                double totalPrice = totalDays * pricePerDay;
+
+                invoice += "Invoice for Rental ID: " + rentalId + "\n";
+                invoice += "Customer Name: " + firstName + " " + lastName + "\n";
+                invoice += "Car: " + carName + " " + carModel + "\n";
+                invoice += "Rental Period: " + startDate + " to " + endDate + " (" + totalDays + " days)\n";
+                invoice += "Price per Day: $" + pricePerDay + "\n";
+                invoice += "Total Price: $" + totalPrice + "\n";
+            } else {
+                invoice = "No rental found with ID: " + rentalId;
+            }
+        } catch (SQLException e) {
+            System.out.println("Error generating invoice: " + e.getMessage());
+            invoice = "Error generating invoice.";
+        }
+
+        return invoice;
+    }
+
+    public List<RentalPeriod> getUserRentals(int userId) {
+        List<RentalPeriod> rentals = new ArrayList<>();
+        String querySql = "SELECT * FROM " + RentalPeriodTableName + " WHERE userId = " + userId;
+        try (Statement statement = conn.createStatement();
+             var resultSet = statement.executeQuery(querySql)) {
+            while (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                int carId = resultSet.getInt("carId");
+                java.sql.Date startDate = resultSet.getDate("startDate");
+                java.sql.Date endDate = resultSet.getDate("endDate");
+                rentals.add(new RentalPeriod(id, userId, carId, startDate, endDate));
+            }
+            System.out.println("Retrieved rentals for user ID: " + userId);
+        } catch (SQLException e) {
+            System.out.println("Error retrieving user rentals: " + e.getMessage());
+        }
+        return rentals;
+    }
+
+    public void close() {
+        try {
+            if (conn != null && !conn.isClosed()) {
+                conn.close();
+                System.out.println("Database connection closed.");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error closing database connection: " + e.getMessage());
+        }
+    }
 }
