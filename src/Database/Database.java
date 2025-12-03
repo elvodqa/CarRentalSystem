@@ -2,6 +2,7 @@ package Database;
 
 import Models.Car;
 import Models.RentalPeriod;
+import Models.User;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -133,6 +134,26 @@ public class Database {
         }
     }
 
+    public List<User> getAllUsers() {
+        List<User> users = new ArrayList<>();
+        String querySql = "SELECT * FROM " + UserTableName;
+        try (Statement statement = conn.createStatement();
+             var resultSet = statement.executeQuery(querySql)) {
+            while (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                String firstName = resultSet.getString("firstName");
+                String lastName = resultSet.getString("lastName");
+                String email = resultSet.getString("email");
+                String password = resultSet.getString("password");
+                users.add(new User(id, firstName, lastName, email, password));
+            }
+            System.out.println("Retrieved all users from database.");
+        } catch (SQLException e) {
+            System.out.println("Error retrieving users: " + e.getMessage());
+        }
+        return users;
+    }
+
     public List<Car> getAllCars() {
         List<Car> cars = new ArrayList<>();
         String querySql = "SELECT * FROM " + CarTableName;
@@ -236,6 +257,108 @@ public class Database {
             }
         } catch (SQLException e) {
             System.out.println("Error closing database connection: " + e.getMessage());
+        }
+    }
+
+    public boolean cancelRental(int rentalId) {
+        String deleteSql = "DELETE FROM " + RentalPeriodTableName + " WHERE id = " + rentalId;
+        try (Statement statement = conn.createStatement()) {
+            int rowsAffected = statement.executeUpdate(deleteSql);
+            if (rowsAffected > 0) {
+                System.out.println("Rental ID " + rentalId + " cancelled successfully.");
+                return true;
+            } else {
+                System.out.println("No rental found with ID: " + rentalId);
+                return false;
+            }
+        } catch (SQLException e) {
+            System.out.println("Error cancelling rental: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean banUser(int userId) {
+        String deleteSql = "DELETE FROM " + UserTableName + " WHERE id = " + userId;
+        try (Statement statement = conn.createStatement()) {
+            int rowsAffected = statement.executeUpdate(deleteSql);
+            if (rowsAffected > 0) {
+                System.out.println("User ID " + userId + " banned successfully.");
+                return true;
+            } else {
+                System.out.println("No user found with ID: " + userId);
+                return false;
+            }
+        } catch (SQLException e) {
+            System.out.println("Error banning user: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean updateCarPrice(int carId, double newPrice) {
+        String updateSql = "UPDATE " + CarTableName + " SET price = " + newPrice + " WHERE id = " + carId;
+        try (Statement statement = conn.createStatement()) {
+            int rowsAffected = statement.executeUpdate(updateSql);
+            if (rowsAffected > 0) {
+                System.out.println("Car ID " + carId + " price updated to $" + newPrice);
+                return true;
+            } else {
+                System.out.println("No car found with ID: " + carId);
+                return false;
+            }
+        } catch (SQLException e) {
+            System.out.println("Error updating car price: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean updateCarColor(int carId, String newColor) {
+        String updateSql = "UPDATE " + CarTableName + " SET color = '" + newColor + "' WHERE id = " + carId;
+        try (Statement statement = conn.createStatement()) {
+            int rowsAffected = statement.executeUpdate(updateSql);
+            if (rowsAffected > 0) {
+                System.out.println("Car ID " + carId + " color updated to " + newColor);
+                return true;
+            } else {
+                System.out.println("No car found with ID: " + carId);
+                return false;
+            }
+        } catch (SQLException e) {
+            System.out.println("Error updating car color: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean updateCarName(int carId, String newName) {
+        String updateSql = "UPDATE " + CarTableName + " SET name = '" + newName + "' WHERE id = " + carId;
+        try (Statement statement = conn.createStatement()) {
+            int rowsAffected = statement.executeUpdate(updateSql);
+            if (rowsAffected > 0) {
+                System.out.println("Car ID " + carId + " name updated to " + newName);
+                return true;
+            } else {
+                System.out.println("No car found with ID: " + carId);
+                return false;
+            }
+        } catch (SQLException e) {
+            System.out.println("Error updating car name: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean updateCarPlate(int carId, String newPlate) {
+        String updateSql = "UPDATE " + CarTableName + " SET plate = '" + newPlate + "' WHERE id = " + carId;
+        try (Statement statement = conn.createStatement()) {
+            int rowsAffected = statement.executeUpdate(updateSql);
+            if (rowsAffected > 0) {
+                System.out.println("Car ID " + carId + " plate updated to " + newPlate);
+                return true;
+            } else {
+                System.out.println("No car found with ID: " + carId);
+                return false;
+            }
+        } catch (SQLException e) {
+            System.out.println("Error updating car plate: " + e.getMessage());
+            return false;
         }
     }
 }
