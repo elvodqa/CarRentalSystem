@@ -4,10 +4,7 @@ import Models.Car;
 import Models.RentalPeriod;
 import Models.User;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -174,13 +171,13 @@ public class Database {
         return cars;
     }
 
-    public boolean createRentalPeriod(int userId, int carId, String startDate, String endDate) {
+    public boolean createRentalPeriod(int userId, int carId, Date startDate, Date endDate) {
         String insertSql = "INSERT INTO " + RentalPeriodTableName +
                 " (userId, carId, startDate, endDate) VALUES (" +
-                userId + ", " + carId + ", DATE('" + startDate + "'), DATE('" + endDate + "'))";
+                userId + ", " + carId + ", '" + startDate + "', '" + endDate + "')";
         try (Statement statement = conn.createStatement()) {
             statement.executeUpdate(insertSql);
-            System.out.println("New rental period added for user ID: " + userId);
+            System.out.println("New rental period added for user ID: " + userId + " and car ID: " + carId);
             return true;
         } catch (SQLException e) {
             System.out.println("Error adding new rental period: " + e.getMessage());
