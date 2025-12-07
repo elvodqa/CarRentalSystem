@@ -14,6 +14,7 @@ import java.util.List;
 public class UserInterface extends JFrame
 {
     private static Database db;
+    private static User user;
     private static JPanel cardPanel, card1, card2, card3, card4;
     private static JLabel label1, label2, label3, label4, label5, label6, label7, label8, label9;
     private static JTextField text1, text2, text3, text4, text5, text6, text7;
@@ -24,9 +25,10 @@ public class UserInterface extends JFrame
     private static java.awt.CardLayout cardLayout = new java.awt.CardLayout();
 
 
-    private UserInterface(Database db)
+    private UserInterface(Database db, User user)
     {
         this.db = db;
+        this.user = user;
 
         setTitle("User Interface");
         setSize(900,600);
@@ -159,6 +161,11 @@ public class UserInterface extends JFrame
 
                     if (validation == true)
                     {
+                        JOptionPane.showMessageDialog(null, "Successfully logged in!");
+                        user.email = text1.getText();
+                        user.password = text2.getText();
+                        System.out.println("Email: " + user.email);
+                        System.out.println("Password: " + user.password);
                         cardLayout.show(cardPanel, "3");
                         // System.out.print(text1.getText());
                         text1.setText("");
@@ -244,6 +251,11 @@ public class UserInterface extends JFrame
 
                 if (command == "Rent Vehicle")
                 {
+                    // createRentalPeriod needs int userId, int carId, String startDate, String endDate
+                    // How can we get a startDate, endDate, and also pass the user and carIDs to the function?
+                    // Do we need a label with a textbox to hold the userID?
+
+
                     // comboBox.getSelectedItem()
 
                 }
@@ -277,6 +289,40 @@ public class UserInterface extends JFrame
         });
         button6.setPreferredSize(fieldSize);
 
+        button7.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                String command = e.getActionCommand();
+
+                if (command == "Cancel Rental")
+                {
+                    // cancelRental requires int rentalID
+                    // Should the user be able to cancel their rental without any issues
+                    // How do we store the rentalID on the GUI?
+                    // Do we need to implement a money balance for the user?
+
+                }
+            }
+        });
+        button7.setPreferredSize(fieldSize);
+
+        button8.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                String command = e.getActionCommand();
+
+                if (command == "Generate Invoice")
+                {
+                    // generateInvoice requires int rentalID
+                    // How do we store the rentalID on the GUI?
+                }
+            }
+        });
+        button8.setPreferredSize(fieldSize);
+
+
         button9.addActionListener(new ActionListener()
         {
             @Override
@@ -286,7 +332,15 @@ public class UserInterface extends JFrame
 
                 if (command == "Back to Login")
                 {
-
+                    JOptionPane.showMessageDialog(null, "Logging out.");
+                    user.email = "";
+                    user.password = "";
+                    System.out.println("Email: " + user.email);
+                    System.out.println("Password: " + user.password);
+                    vehicles.clear();
+                    comboBox.removeAllItems();
+                    text7.removeAll();
+                    cardLayout.show(cardPanel, "1");
                 }
             }
         });
@@ -361,7 +415,8 @@ public class UserInterface extends JFrame
             public void run()
             {
                 Database db = new Database();
-                UserInterface frame = new UserInterface(db);
+                User user = new User();
+                UserInterface frame = new UserInterface(db, user);
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 frame.setVisible(true);
             }
