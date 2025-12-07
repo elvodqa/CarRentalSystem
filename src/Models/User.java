@@ -16,6 +16,6 @@ public class User {
     }
 
     public String toString() {
-        return firstName + " " + lastName + " " + email + " " + password;
+        return id + " " + firstName + " " + lastName + " " + email + " " + password;
     }
 }

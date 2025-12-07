@@ -16,4 +16,8 @@ public class RentalPeriod {
         this.startDate = startDate;
         this.endDate = endDate;
     }
+
+    public String toString() {
+        return id + " " + userId + " " + carId + " " + startDate + " " + endDate;
+    }
 }

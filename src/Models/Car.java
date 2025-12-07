@@ -16,4 +16,8 @@ public class Car {
         this.color = color;
         this.pricePerDay = price;
     }
+
+    public String toString() {
+        return id + " " + name + " " + model + " " + plate + " " + color + " " + pricePerDay;
+    }
 }
