@@ -18,7 +18,7 @@ public class UserInterface extends JFrame
     private static User user;
     private static JPanel cardPanel, card1, card2, card3, card4;
     private static JLabel label1, label2, label3, label4, label5, label6, label7, label8, label9;
-    private static JTextField text1, text2, text3, text4, text5, text6, text7;
+    private static JTextField text1, text2, text3, text4, text5, text6, text7, text8, text9, text10, text11;
     private static JButton button1, button2, button3, button4, button5, button6, button7, button8, button9;
     private static JList <Car> listBox;
     private static JList <RentalPeriod> invoice;
@@ -28,10 +28,10 @@ public class UserInterface extends JFrame
     private static java.awt.CardLayout cardLayout = new java.awt.CardLayout();
 
 
-    private UserInterface(Database db, User user)
+    private UserInterface(Database db, User initialUser)
     {
         this.db = db;
-        this.user = user;
+        this.user = initialUser;
 
         setTitle("User Interface");
         setSize(900,600);
@@ -59,7 +59,7 @@ public class UserInterface extends JFrame
         button4 = new JButton("Back to Home");
         button5 = new JButton("Rent Vehicle");
         button6 = new JButton("Search Vehicles");
-        button7 = new JButton("Cancel Rental");
+        button7 = new JButton("User Info");
         button8 = new JButton("Generate Invoice");
         button9 = new JButton("Back to Login");
 
@@ -70,6 +70,10 @@ public class UserInterface extends JFrame
         text5 = new JTextField("",15);
         text6 = new JTextField("",15);
         text7 = new JTextField("",15);
+        text8 = new JTextField("",15);
+        text9 = new JTextField("",15);
+        text10 = new JTextField("",15);
+        text11 = new JTextField("",15);
 
         listBox = new JList<>(vehicles);
         listBox.setVisibleRowCount(-1);
@@ -175,7 +179,8 @@ public class UserInterface extends JFrame
                     if (validation == true)
                     {
                         JOptionPane.showMessageDialog(null, "Successfully logged in!");
-                       user = db.getUserByEmail(user.email);
+                        initialUser.email = text1.getText();
+                        user = db.getUserByEmail(initialUser.email);
                         cardLayout.show(cardPanel, "3");
                         // System.out.print(text1.getText());
                         text1.setText("");
@@ -330,13 +335,12 @@ public class UserInterface extends JFrame
             {
                 String command = e.getActionCommand();
 
-                if (command == "Cancel Rental")
+                if (command == "User Info")
                 {
-                    // cancelRental requires int rentalID
-                    // Should the user be able to cancel their rental without any issues
-                    // How do we store the rentalID on the GUI?
-                    // Do we need to implement a money balance for the user?
+                    Object[] message = {"First Name: ", user.firstName, "Last Name: ", user.lastName,
+                    "Email: ", user.email, "Password: ", user.password};
 
+                    int option = JOptionPane.showConfirmDialog(null, message, "Account Information", JOptionPane.DEFAULT_OPTION);
                 }
             }
         });
@@ -374,10 +378,10 @@ public class UserInterface extends JFrame
                 if (command == "Back to Login")
                 {
                     JOptionPane.showMessageDialog(null, "Logging out.");
-                    user.email = "";
-                    user.password = "";
-                    System.out.println("Email: " + user.email);
-                    System.out.println("Password: " + user.password);
+                    initialUser.email = "";
+                    initialUser.password = "";
+                    System.out.println("Email: " + initialUser.email);
+                    System.out.println("Password: " + initialUser.password);
                     vehicles.clear();
                     invoiceModel.clear();
                     comboBox.removeAllItems();
@@ -438,7 +442,7 @@ public class UserInterface extends JFrame
         button9.setPreferredSize(fieldSize);
         gbc.gridwidth = 1;
 
-        // Ask for a user's info function in backend
+        // Ask for a initialUser's info function in backend
 
         cardPanel.add(card1, "1");
         cardPanel.add(card2, "2");
