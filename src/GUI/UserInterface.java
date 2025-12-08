@@ -1,6 +1,7 @@
 package GUI;
 import Database.Database;
 import Models.Car;
+import Models.RentalPeriod;
 import Models.User;
 import javax.swing.*;
 import java.awt.*;
@@ -17,18 +18,21 @@ public class UserInterface extends JFrame
     private static User user;
     private static JPanel cardPanel, card1, card2, card3, card4;
     private static JLabel label1, label2, label3, label4, label5, label6, label7, label8, label9;
-    private static JTextField text1, text2, text3, text4, text5, text6, text7;
+    private static JTextField text1, text2, text3, text4, text5, text6, text7, text8, text9, text10, text11;
     private static JButton button1, button2, button3, button4, button5, button6, button7, button8, button9;
     private static JList <Car> listBox;
-    private static JComboBox<Car> comboBox;
+    private static JList <String> invoice;
+    private static JComboBox<Integer> comboBox;
     private static DefaultListModel<Car> vehicles = new DefaultListModel<>();
+    private static DefaultListModel<String> invoiceModel = new DefaultListModel<>();
+    private static JTextArea vehicleArea, invoiceArea;
     private static java.awt.CardLayout cardLayout = new java.awt.CardLayout();
 
 
-    private UserInterface(Database db, User user)
+    private UserInterface(Database db, User initialUser)
     {
         this.db = db;
-        this.user = user;
+        this.user = initialUser;
 
         setTitle("User Interface");
         setSize(900,600);
@@ -56,7 +60,7 @@ public class UserInterface extends JFrame
         button4 = new JButton("Back to Home");
         button5 = new JButton("Rent Vehicle");
         button6 = new JButton("Search Vehicles");
-        button7 = new JButton("Cancel Rental");
+        button7 = new JButton("User Info");
         button8 = new JButton("Generate Invoice");
         button9 = new JButton("Back to Login");
 
@@ -67,19 +71,46 @@ public class UserInterface extends JFrame
         text5 = new JTextField("",15);
         text6 = new JTextField("",15);
         text7 = new JTextField("",15);
+        text8 = new JTextField("",15);
+        text9 = new JTextField("",15);
+        text10 = new JTextField("",15);
+        text11 = new JTextField("",15);
 
         listBox = new JList<>(vehicles);
         listBox.setVisibleRowCount(-1);
         listBox.setVisible(true);
         listBox.setSize(100, 100);
-        JScrollPane scrollPane = new JScrollPane(listBox);
+
+        vehicleArea = new JTextArea();
+        vehicleArea.setVisible(true);
+        vehicleArea.setEditable(false);
+
+        JScrollPane scrollPane = new JScrollPane(vehicleArea);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setSize(100,100);
 
+        invoiceArea = new JTextArea();
+        invoiceArea.setVisible(true);
+        invoiceArea.setEditable(false);
+
+
+        invoice = new JList<>(invoiceModel);
+        invoice.setVisibleRowCount(-1);
+        invoice.setVisible(true);
+        invoice.setSize(100, 100);
+
+        JScrollPane scrollPane2 = new JScrollPane(invoiceArea);
+        scrollPane2.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane2.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scrollPane2.setSize(100,100);
+        
+
+
         comboBox = new JComboBox<>();
         comboBox.setSelectedIndex(-1);
         comboBox.setVisible(true);
+
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -158,16 +189,12 @@ public class UserInterface extends JFrame
                     }
 
                     validation = db.validateUser(text1.getText(), text2.getText());
-
                     if (validation == true)
                     {
                         JOptionPane.showMessageDialog(null, "Successfully logged in!");
-                        user.email = text1.getText();
-                        user.password = text2.getText();
-                        System.out.println("Email: " + user.email);
-                        System.out.println("Password: " + user.password);
+                        initialUser.email = text1.getText();
+                        user = db.getUserByEmail(initialUser.email);
                         cardLayout.show(cardPanel, "3");
-                        // System.out.print(text1.getText());
                         text1.setText("");
                         text2.setText("");
                         text3.setText("");
@@ -268,20 +295,26 @@ public class UserInterface extends JFrame
 
                     // Date.valueOf("2025-01-15");
                     // should be in this format
-                    if (option == JOptionPane.OK_OPTION) {
+                    if (option == JOptionPane.OK_OPTION)
+                    {
                         Date startDateSql = java.sql.Date.valueOf(startDate.getText());
                         Date endDateSql = java.sql.Date.valueOf(endDate.getText());
-                        Car selectedCar = (Car) comboBox.getSelectedItem();
-                        boolean rentalCreated = db.createRentalPeriod(user.id, selectedCar.id, startDateSql, endDateSql);
-                        if (rentalCreated) {
+
+                        int carID = (int) comboBox.getSelectedItem();
+                        boolean rentalCreated = db.createRentalPeriod(user.id, carID, startDateSql, endDateSql);
+                        if (rentalCreated)
+                            {
                             JOptionPane.showMessageDialog(null, "Rental created successfully!");
-                        } else {
+                            }
+                        else
+                            {
                             JOptionPane.showMessageDialog(null, "Error creating rental.");
-                        }
-                    } else {
+                            }
+                    }
+                    else
+                    {
                         System.out.println("User canceled");
                     }
-
 
                 }
             }
@@ -297,18 +330,18 @@ public class UserInterface extends JFrame
 
                 if (command == "Search Vehicles")
                 {
-                    vehicles.clear();
+                    // vehicles.clear();
                     comboBox.removeAllItems();
-                    List<Car> cars = new ArrayList<>();
-                    cars = db.getAllCars();
+                    List<Car> cars = db.getAllCars();
+                    StringBuilder sb = new StringBuilder();
 
                     for (Car car : cars)
                     {
-                        vehicles.addElement(car);
-                        comboBox.addItem(car);
+                        sb.append(car).append("\n");
+                        comboBox.addItem(car.id);
                     }
 
-                    listBox.setModel(vehicles);
+                    vehicleArea.setText(sb.toString());
                 }
             }
         });
@@ -320,13 +353,12 @@ public class UserInterface extends JFrame
             {
                 String command = e.getActionCommand();
 
-                if (command == "Cancel Rental")
+                if (command == "User Info")
                 {
-                    // cancelRental requires int rentalID
-                    // Should the user be able to cancel their rental without any issues
-                    // How do we store the rentalID on the GUI?
-                    // Do we need to implement a money balance for the user?
+                    Object[] message = {"First Name: ", user.firstName, "Last Name: ", user.lastName,
+                    "Email: ", user.email, "Password: ", user.password};
 
+                    int option = JOptionPane.showConfirmDialog(null, message, "Account Information", JOptionPane.DEFAULT_OPTION);
                 }
             }
         });
@@ -340,8 +372,14 @@ public class UserInterface extends JFrame
 
                 if (command == "Generate Invoice")
                 {
-                    // generateInvoice requires int rentalID
-                    // How do we store the rentalID on the GUI?
+                    List<RentalPeriod> period = db.getAllRentalByUserId(user.id);
+                    StringBuilder sb = new StringBuilder();
+
+                    for (RentalPeriod rental : period) {
+                        sb.append(db.generateInvoice(rental.id)).append("\n");
+                    }
+
+                    invoiceArea.setText(sb.toString());
                 }
             }
         });
@@ -358,13 +396,9 @@ public class UserInterface extends JFrame
                 if (command == "Back to Login")
                 {
                     JOptionPane.showMessageDialog(null, "Logging out.");
-                    user.email = "";
-                    user.password = "";
-                    System.out.println("Email: " + user.email);
-                    System.out.println("Password: " + user.password);
                     vehicles.clear();
+                    invoiceModel.clear();
                     comboBox.removeAllItems();
-                    text7.removeAll();
                     cardLayout.show(cardPanel, "1");
                 }
             }
@@ -392,15 +426,21 @@ public class UserInterface extends JFrame
         card3.add(label7, gbc);
         gbc.gridx = 2; gbc.gridy = 0;
         card3.add(label8, gbc);
-        fieldSize = new Dimension (100, 100);
+        fieldSize = new Dimension (200, 200);
         gbc.gridwidth = 2;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        gbc.fill = GridBagConstraints.BOTH;
         gbc.gridx = 0; gbc.gridy = 1;
         card3.add(scrollPane, gbc);
         scrollPane.setPreferredSize(fieldSize);
         gbc.gridx = 2; gbc.gridy = 1;
-        card3.add(text7, gbc);
-        text7.setPreferredSize(fieldSize);
+        card3.add(scrollPane2, gbc);
+        scrollPane2.setPreferredSize(fieldSize);
         gbc.gridwidth = 1;
+        gbc.weightx = 0.0;
+        gbc.weighty = 0.0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
         fieldSize = new Dimension (200, 30);
         gbc.gridx = 0; gbc.gridy = 2;
         card3.add(comboBox, gbc);
@@ -422,7 +462,7 @@ public class UserInterface extends JFrame
         button9.setPreferredSize(fieldSize);
         gbc.gridwidth = 1;
 
-        // Ask for a user's info function in backend
+        // Ask for a initialUser's info function in backend
 
         cardPanel.add(card1, "1");
         cardPanel.add(card2, "2");
