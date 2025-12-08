@@ -1,6 +1,7 @@
 package GUI;
 import Database.Database;
 import Models.Car;
+import Models.RentalPeriod;
 import Models.User;
 import javax.swing.*;
 import java.awt.*;
@@ -20,8 +21,10 @@ public class UserInterface extends JFrame
     private static JTextField text1, text2, text3, text4, text5, text6, text7;
     private static JButton button1, button2, button3, button4, button5, button6, button7, button8, button9;
     private static JList <Car> listBox;
+    private static JList <RentalPeriod> invoice;
     private static JComboBox<Car> comboBox;
     private static DefaultListModel<Car> vehicles = new DefaultListModel<>();
+    private static DefaultListModel<RentalPeriod> invoiceModel = new DefaultListModel<>();
     private static java.awt.CardLayout cardLayout = new java.awt.CardLayout();
 
 
@@ -76,6 +79,17 @@ public class UserInterface extends JFrame
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setSize(100,100);
+
+        invoice = new JList<>(invoiceModel);
+        invoice.setVisibleRowCount(-1);
+        invoice.setVisible(true);
+        invoice.setSize(100, 100);
+        JScrollPane scrollPane2 = new JScrollPane(invoice);
+        scrollPane2.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane2.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scrollPane2.setSize(100,100);
+        
+
 
         comboBox = new JComboBox<>();
         comboBox.setSelectedIndex(-1);
@@ -158,14 +172,10 @@ public class UserInterface extends JFrame
                     }
 
                     validation = db.validateUser(text1.getText(), text2.getText());
-
                     if (validation == true)
                     {
                         JOptionPane.showMessageDialog(null, "Successfully logged in!");
-                        user.email = text1.getText();
-                        user.password = text2.getText();
-                        System.out.println("Email: " + user.email);
-                        System.out.println("Password: " + user.password);
+                       user = db.getUserByEmail(user.email);
                         cardLayout.show(cardPanel, "3");
                         // System.out.print(text1.getText());
                         text1.setText("");
@@ -340,8 +350,14 @@ public class UserInterface extends JFrame
 
                 if (command == "Generate Invoice")
                 {
-                    // generateInvoice requires int rentalID
-                    // How do we store the rentalID on the GUI?
+                    invoiceModel.clear();
+                    List<RentalPeriod> period = new ArrayList<>();
+                    period = db.getAllRentalByUserId(user.id);
+
+                    for(RentalPeriod rental : period)
+                    {
+                        invoiceModel.addElement(rental);
+                    }
                 }
             }
         });
@@ -363,8 +379,8 @@ public class UserInterface extends JFrame
                     System.out.println("Email: " + user.email);
                     System.out.println("Password: " + user.password);
                     vehicles.clear();
+                    invoiceModel.clear();
                     comboBox.removeAllItems();
-                    text7.removeAll();
                     cardLayout.show(cardPanel, "1");
                 }
             }
@@ -398,8 +414,8 @@ public class UserInterface extends JFrame
         card3.add(scrollPane, gbc);
         scrollPane.setPreferredSize(fieldSize);
         gbc.gridx = 2; gbc.gridy = 1;
-        card3.add(text7, gbc);
-        text7.setPreferredSize(fieldSize);
+        card3.add(scrollPane2, gbc);
+        scrollPane2.setPreferredSize(fieldSize);
         gbc.gridwidth = 1;
         fieldSize = new Dimension (200, 30);
         gbc.gridx = 0; gbc.gridy = 2;

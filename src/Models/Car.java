@@ -18,6 +18,13 @@ public class Car {
     }
 
     public String toString() {
-        return id + " " + name + " " + model + " " + plate + " " + color + " " + pricePerDay;
+        return "-------------------\n" +
+                id + "\n" +
+                name + "\n" +
+                model + "\n" +
+                plate + "\n" +
+                color + "\n" +
+                pricePerDay + "\n" +
+                "-------------------";
     }
 }

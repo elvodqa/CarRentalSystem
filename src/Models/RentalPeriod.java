@@ -18,6 +18,6 @@ public class RentalPeriod {
     }
 
     public String toString() {
-        return id + " " + userId + " " + carId + " " + startDate + " " + endDate;
+        return id + "\n" + userId + "\n" + carId + "\n" + startDate + "\n" + endDate + "\n";
     }
 }
