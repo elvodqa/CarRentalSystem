@@ -82,13 +82,31 @@ public class Database {
     }
 
 
+
     // Returns true on success, false on failure
     public boolean createUser(String firstName, String lastName, String email, String password) {
-        String insertSql = "INSERT INTO " + UserTableName +
-                " (firstName, lastName, email, password) VALUES ('" +
-                firstName + "', '" + lastName + "', '" + email + "', '" + password + "')";
-        try (Statement statement = conn.createStatement()) {
-            statement.executeUpdate(insertSql);
+        // Check if email already exists
+        String checkSql = "SELECT COUNT(*) FROM " + UserTableName + " WHERE email = ?";
+        try (PreparedStatement checkStmt = conn.prepareStatement(checkSql)) {
+            checkStmt.setString(1, email);
+            try (ResultSet rs = checkStmt.executeQuery()) {
+                if (rs.next() && rs.getInt(1) > 0) {
+                    System.out.println("User with email " + email + " already exists");
+                    return false;
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error checking existing user: " + e.getMessage());
+            return false;
+        }
+
+        String insertSql = "INSERT INTO " + UserTableName + " (firstName, lastName, email, password) VALUES (?, ?, ?, ?)";
+        try (PreparedStatement insertStmt = conn.prepareStatement(insertSql)) {
+            insertStmt.setString(1, firstName);
+            insertStmt.setString(2, lastName);
+            insertStmt.setString(3, email);
+            insertStmt.setString(4, password);
+            insertStmt.executeUpdate();
             System.out.println("New user added: " + firstName + " " + lastName);
             return true;
         } catch (SQLException e) {
