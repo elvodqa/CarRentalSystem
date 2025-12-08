@@ -251,12 +251,36 @@ public class UserInterface extends JFrame
 
                 if (command == "Rent Vehicle")
                 {
-                    // createRentalPeriod needs int userId, int carId, String startDate, String endDate
-                    // How can we get a startDate, endDate, and also pass the user and carIDs to the function?
-                    // Do we need a label with a textbox to hold the userID?
+                    JTextField startDate = new JTextField();
+                    JTextField endDate = new JTextField();
 
+                    Object[] message = {
+                            "Start date:", startDate,
+                            "End date:", endDate
+                    };
 
-                    // comboBox.getSelectedItem()
+                    int option = JOptionPane.showConfirmDialog(
+                            null,
+                            message,
+                            "Enter Values",
+                            JOptionPane.OK_CANCEL_OPTION
+                    );
+
+                    // java.sql.Date sqlDate = java.sql.Date.valueOf("2025-01-15");
+                    if (option == JOptionPane.OK_OPTION) {
+                        Date startDateSql = java.sql.Date.valueOf(startDate.getText());
+                        Date endDateSql = java.sql.Date.valueOf(endDate.getText());
+                        Car selectedCar = (Car) comboBox.getSelectedItem();
+                        boolean rentalCreated = db.createRentalPeriod(user.id, selectedCar.id, startDateSql, endDateSql);
+                        if (rentalCreated) {
+                            JOptionPane.showMessageDialog(null, "Rental created successfully!");
+                        } else {
+                            JOptionPane.showMessageDialog(null, "Error creating rental.");
+                        }
+                    } else {
+                        System.out.println("User canceled");
+                    }
+
 
                 }
             }
