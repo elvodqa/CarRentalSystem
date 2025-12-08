@@ -170,6 +170,25 @@ public class Database {
         return user;
     }
 
+    public User getUserByEmail(String email) {
+        User user = null;
+        String querySql = "SELECT * FROM " + UserTableName + " WHERE email = '" + email + "'";
+        try (Statement statement = conn.createStatement();
+             var resultSet = statement.executeQuery(querySql)) {
+            if (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                String firstName = resultSet.getString("firstName");
+                String lastName = resultSet.getString("lastName");
+                String password = resultSet.getString("password");
+                user = new User(id, firstName, lastName, email, password);
+            }
+            System.out.println("Retrieved user with email: " + email);
+        } catch (SQLException e) {
+            System.out.println("Error retrieving user: " + e.getMessage());
+        }
+        return user;
+    }
+
     public Car getCarById(int carId) {
         Car car = null;
         String querySql = "SELECT * FROM " + CarTableName + " WHERE id = " + carId;
