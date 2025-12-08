@@ -233,6 +233,26 @@ public class Database {
         return car;
     }
 
+    public List<RentalPeriod> getAllRentals() {
+        List<RentalPeriod> rentals = new ArrayList<>();
+        String querySql = "SELECT * FROM " + RentalPeriodTableName;
+        try (Statement statement = conn.createStatement();
+             var resultSet = statement.executeQuery(querySql)) {
+            while (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                int userId = resultSet.getInt("userId");
+                int carId = resultSet.getInt("carId");
+                java.sql.Date startDate = resultSet.getDate("startDate");
+                java.sql.Date endDate = resultSet.getDate("endDate");
+                rentals.add(new RentalPeriod(id, userId, carId, startDate, endDate));
+            }
+            System.out.println("Retrieved all rental periods from database.");
+        } catch (SQLException e) {
+            System.out.println("Error retrieving rental periods: " + e.getMessage());
+        }
+        return rentals;
+    }
+
     public List<RentalPeriod> getAllRentalByUserId(int userId) {
         List<RentalPeriod> rentals = new ArrayList<>();
         String querySql = "SELECT * FROM " + RentalPeriodTableName + " WHERE userId = " + userId;
@@ -250,6 +270,48 @@ public class Database {
             System.out.println("Error retrieving rental periods: " + e.getMessage());
         }
         return rentals;
+    }
+
+    public List<RentalPeriod> getRentalPeriodsByCarId(int carId) {
+        List<RentalPeriod> rentals = new ArrayList<>();
+        String querySql = "SELECT * FROM " + RentalPeriodTableName + " WHERE carId = " + carId;
+        try (Statement statement = conn.createStatement();
+             var resultSet = statement.executeQuery(querySql)) {
+            while (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                int userId = resultSet.getInt("userId");
+                java.sql.Date startDate = resultSet.getDate("startDate");
+                java.sql.Date endDate = resultSet.getDate("endDate");
+                rentals.add(new RentalPeriod(id, userId, carId, startDate, endDate));
+            }
+            System.out.println("Retrieved all rental periods for car ID: " + carId);
+        } catch (SQLException e) {
+            System.out.println("Error retrieving rental periods: " + e.getMessage());
+        }
+        return rentals;
+    }
+
+    public RentalPeriod deleteRentalPeriodById(int rentalPeriodId) {
+        RentalPeriod rentalPeriod = getRentalPeriodById(rentalPeriodId);
+        if (rentalPeriod == null) {
+            System.out.println("No rental period found with ID: " + rentalPeriodId);
+            return null;
+        }
+
+        String deleteSql = "DELETE FROM " + RentalPeriodTableName + " WHERE id = " + rentalPeriodId;
+        try (Statement statement = conn.createStatement()) {
+            int rowsAffected = statement.executeUpdate(deleteSql);
+            if (rowsAffected > 0) {
+                System.out.println("Deleted rental period with ID: " + rentalPeriodId);
+                return rentalPeriod;
+            } else {
+                System.out.println("No rental period found with ID: " + rentalPeriodId);
+                return null;
+            }
+        } catch (SQLException e) {
+            System.out.println("Error deleting rental period: " + e.getMessage());
+            return null;
+        }
     }
 
     public RentalPeriod getRentalPeriodById(int rentalPeriodId) {
