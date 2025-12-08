@@ -191,6 +191,25 @@ public class Database {
         return car;
     }
 
+    public List<RentalPeriod> getAllRentalByUserId(int userId) {
+        List<RentalPeriod> rentals = new ArrayList<>();
+        String querySql = "SELECT * FROM " + RentalPeriodTableName + " WHERE userId = " + userId;
+        try (Statement statement = conn.createStatement();
+             var resultSet = statement.executeQuery(querySql)) {
+            while (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                int carId = resultSet.getInt("carId");
+                java.sql.Date startDate = resultSet.getDate("startDate");
+                java.sql.Date endDate = resultSet.getDate("endDate");
+                rentals.add(new RentalPeriod(id, userId, carId, startDate, endDate));
+            }
+            System.out.println("Retrieved all rental periods for user ID: " + userId);
+        } catch (SQLException e) {
+            System.out.println("Error retrieving rental periods: " + e.getMessage());
+        }
+        return rentals;
+    }
+
     public RentalPeriod getRentalPeriodById(int rentalPeriodId) {
         RentalPeriod rentalPeriod = null;
         String querySql = "SELECT * FROM " + RentalPeriodTableName + " WHERE id = " + rentalPeriodId;
