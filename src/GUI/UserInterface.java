@@ -266,7 +266,8 @@ public class UserInterface extends JFrame
                             JOptionPane.OK_CANCEL_OPTION
                     );
 
-                    // java.sql.Date sqlDate = java.sql.Date.valueOf("2025-01-15");
+                    // Date.valueOf("2025-01-15");
+                    // should be in this format
                     if (option == JOptionPane.OK_OPTION) {
                         Date startDateSql = java.sql.Date.valueOf(startDate.getText());
                         Date endDateSql = java.sql.Date.valueOf(endDate.getText());
