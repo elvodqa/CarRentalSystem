@@ -150,6 +150,67 @@ public class Database {
         return users;
     }
 
+    public User getUserById(int userId) {
+        User user = null;
+        String querySql = "SELECT * FROM " + UserTableName + " WHERE id = " + userId;
+        try (Statement statement = conn.createStatement();
+             var resultSet = statement.executeQuery(querySql)) {
+            if (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                String firstName = resultSet.getString("firstName");
+                String lastName = resultSet.getString("lastName");
+                String email = resultSet.getString("email");
+                String password = resultSet.getString("password");
+                user = new User(id, firstName, lastName, email, password);
+            }
+            System.out.println("Retrieved user with ID: " + userId);
+        } catch (SQLException e) {
+            System.out.println("Error retrieving user: " + e.getMessage());
+        }
+        return user;
+    }
+
+    public Car getCarById(int carId) {
+        Car car = null;
+        String querySql = "SELECT * FROM " + CarTableName + " WHERE id = " + carId;
+        try (Statement statement = conn.createStatement();
+             var resultSet = statement.executeQuery(querySql)) {
+            if (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                String name = resultSet.getString("name");
+                String model = resultSet.getString("model");
+                String plate = resultSet.getString("plate");
+                String color = resultSet.getString("color");
+                double price = resultSet.getDouble("price");
+                car = new Car(id, name, model, plate, color, price);
+            }
+            System.out.println("Retrieved car with ID: " + carId);
+        } catch (SQLException e) {
+            System.out.println("Error retrieving car: " + e.getMessage());
+        }
+        return car;
+    }
+
+    public RentalPeriod getRentalPeriodById(int rentalPeriodId) {
+        RentalPeriod rentalPeriod = null;
+        String querySql = "SELECT * FROM " + RentalPeriodTableName + " WHERE id = " + rentalPeriodId;
+        try (Statement statement = conn.createStatement();
+             var resultSet = statement.executeQuery(querySql)) {
+            if (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                int userId = resultSet.getInt("userId");
+                int carId = resultSet.getInt("carId");
+                java.sql.Date startDate = resultSet.getDate("startDate");
+                java.sql.Date endDate = resultSet.getDate("endDate");
+                rentalPeriod = new RentalPeriod(id, userId, carId, startDate, endDate);
+            }
+            System.out.println("Retrieved rental period with ID: " + rentalPeriodId);
+        } catch (SQLException e) {
+            System.out.println("Error retrieving rental period: " + e.getMessage());
+        }
+        return rentalPeriod;
+    }
+
     public List<Car> getAllCars() {
         List<Car> cars = new ArrayList<>();
         String querySql = "SELECT * FROM " + CarTableName;
