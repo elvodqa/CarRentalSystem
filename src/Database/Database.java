@@ -172,11 +172,31 @@ public class Database {
     }
 
     public boolean createRentalPeriod(int userId, int carId, Date startDate, Date endDate) {
+        String overlapSql = "SELECT COUNT(*) FROM " + RentalPeriodTableName +
+                " WHERE carId = ? AND NOT (endDate < ? OR startDate > ?)";
+        try (PreparedStatement checkStmt = conn.prepareStatement(overlapSql)) {
+            checkStmt.setInt(1, carId);
+            checkStmt.setDate(2, startDate);
+            checkStmt.setDate(3, endDate);
+            try (ResultSet rs = checkStmt.executeQuery()) {
+                if (rs.next() && rs.getInt(1) > 0) {
+                    System.out.println("Car ID " + carId + " is already rented in the given period.");
+                    return false;
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error checking rental overlap: " + e.getMessage());
+            return false;
+        }
+
         String insertSql = "INSERT INTO " + RentalPeriodTableName +
-                " (userId, carId, startDate, endDate) VALUES (" +
-                userId + ", " + carId + ", '" + startDate + "', '" + endDate + "')";
-        try (Statement statement = conn.createStatement()) {
-            statement.executeUpdate(insertSql);
+                " (userId, carId, startDate, endDate) VALUES (?, ?, ?, ?)";
+        try (PreparedStatement insertStmt = conn.prepareStatement(insertSql)) {
+            insertStmt.setInt(1, userId);
+            insertStmt.setInt(2, carId);
+            insertStmt.setDate(3, startDate);
+            insertStmt.setDate(4, endDate);
+            insertStmt.executeUpdate();
             System.out.println("New rental period added for user ID: " + userId + " and car ID: " + carId);
             return true;
         } catch (SQLException e) {
