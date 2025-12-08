@@ -22,10 +22,10 @@ public class UserInterface extends JFrame
     private static JButton button1, button2, button3, button4, button5, button6, button7, button8, button9;
     private static JList <Car> listBox;
     private static JList <String> invoice;
-    private static JComboBox<Car> comboBox;
+    private static JComboBox<String> comboBox;
     private static DefaultListModel<Car> vehicles = new DefaultListModel<>();
     private static DefaultListModel<String> invoiceModel = new DefaultListModel<>();
-    private static JTextArea vehicleArea;
+    private static JTextArea vehicleArea, invoiceArea;
     private static java.awt.CardLayout cardLayout = new java.awt.CardLayout();
 
 
@@ -80,20 +80,27 @@ public class UserInterface extends JFrame
         listBox.setVisibleRowCount(-1);
         listBox.setVisible(true);
         listBox.setSize(100, 100);
-        JScrollPane scrollPane = new JScrollPane(listBox);
-        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        scrollPane.setSize(100,100);
 
         vehicleArea = new JTextArea();
         vehicleArea.setVisible(true);
         vehicleArea.setEditable(false);
 
+        JScrollPane scrollPane = new JScrollPane(vehicleArea);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setSize(100,100);
+
+        invoiceArea = new JTextArea();
+        invoiceArea.setVisible(true);
+        invoiceArea.setEditable(false);
+
+
         invoice = new JList<>(invoiceModel);
         invoice.setVisibleRowCount(-1);
         invoice.setVisible(true);
         invoice.setSize(100, 100);
-        JScrollPane scrollPane2 = new JScrollPane(vehicleArea);
+
+        JScrollPane scrollPane2 = new JScrollPane(invoiceArea);
         scrollPane2.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollPane2.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPane2.setSize(100,100);
@@ -188,7 +195,6 @@ public class UserInterface extends JFrame
                         initialUser.email = text1.getText();
                         user = db.getUserByEmail(initialUser.email);
                         cardLayout.show(cardPanel, "3");
-                        // System.out.print(text1.getText());
                         text1.setText("");
                         text2.setText("");
                         text3.setText("");
@@ -289,20 +295,25 @@ public class UserInterface extends JFrame
 
                     // Date.valueOf("2025-01-15");
                     // should be in this format
-                    if (option == JOptionPane.OK_OPTION) {
+                    if (option == JOptionPane.OK_OPTION)
+                    {
                         Date startDateSql = java.sql.Date.valueOf(startDate.getText());
                         Date endDateSql = java.sql.Date.valueOf(endDate.getText());
                         Car selectedCar = (Car) comboBox.getSelectedItem();
                         boolean rentalCreated = db.createRentalPeriod(user.id, selectedCar.id, startDateSql, endDateSql);
-                        if (rentalCreated) {
+                        if (rentalCreated)
+                            {
                             JOptionPane.showMessageDialog(null, "Rental created successfully!");
-                        } else {
+                            }
+                        else
+                            {
                             JOptionPane.showMessageDialog(null, "Error creating rental.");
-                        }
-                    } else {
+                            }
+                    }
+                    else
+                    {
                         System.out.println("User canceled");
                     }
-
 
                 }
             }
@@ -318,18 +329,18 @@ public class UserInterface extends JFrame
 
                 if (command == "Search Vehicles")
                 {
-                    vehicles.clear();
+                    // vehicles.clear();
                     comboBox.removeAllItems();
-                    List<Car> cars = new ArrayList<>();
-                    cars = db.getAllCars();
+                    List<Car> cars = db.getAllCars();
+                    StringBuilder sb = new StringBuilder();
 
                     for (Car car : cars)
                     {
-                        vehicles.addElement(car);
-                        comboBox.addItem(car);
+                        sb.append(car).append("\n");
+                        comboBox.addItem(car.plate);
                     }
 
-                    listBox.setModel(vehicles);
+                    vehicleArea.setText(sb.toString());
                 }
             }
         });
@@ -367,7 +378,7 @@ public class UserInterface extends JFrame
                         sb.append(db.generateInvoice(rental.id)).append("\n");
                     }
 
-                    vehicleArea.setText(sb.toString());
+                    invoiceArea.setText(sb.toString());
                 }
             }
         });
@@ -384,10 +395,6 @@ public class UserInterface extends JFrame
                 if (command == "Back to Login")
                 {
                     JOptionPane.showMessageDialog(null, "Logging out.");
-                    initialUser.email = "";
-                    initialUser.password = "";
-                    System.out.println("Email: " + initialUser.email);
-                    System.out.println("Password: " + initialUser.password);
                     vehicles.clear();
                     invoiceModel.clear();
                     comboBox.removeAllItems();
