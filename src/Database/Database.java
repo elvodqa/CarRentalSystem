@@ -18,6 +18,11 @@ public class Database {
     private Connection conn = null;
     public Database() {
         connect();
+        if (createTables()) {
+            System.out.println("Tables created successfully");
+        } else {
+            System.out.println("Tables creation failed or already exist");
+        }
     }
 
     private void connect() {
