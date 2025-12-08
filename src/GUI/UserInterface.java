@@ -22,7 +22,7 @@ public class UserInterface extends JFrame
     private static JButton button1, button2, button3, button4, button5, button6, button7, button8, button9;
     private static JList <Car> listBox;
     private static JList <String> invoice;
-    private static JComboBox<String> comboBox;
+    private static JComboBox<Integer> comboBox;
     private static DefaultListModel<Car> vehicles = new DefaultListModel<>();
     private static DefaultListModel<String> invoiceModel = new DefaultListModel<>();
     private static JTextArea vehicleArea, invoiceArea;
@@ -299,8 +299,9 @@ public class UserInterface extends JFrame
                     {
                         Date startDateSql = java.sql.Date.valueOf(startDate.getText());
                         Date endDateSql = java.sql.Date.valueOf(endDate.getText());
-                        Car selectedCar = (Car) comboBox.getSelectedItem();
-                        boolean rentalCreated = db.createRentalPeriod(user.id, selectedCar.id, startDateSql, endDateSql);
+
+                        int carID = (int) comboBox.getSelectedItem();
+                        boolean rentalCreated = db.createRentalPeriod(user.id, carID, startDateSql, endDateSql);
                         if (rentalCreated)
                             {
                             JOptionPane.showMessageDialog(null, "Rental created successfully!");
@@ -337,7 +338,7 @@ public class UserInterface extends JFrame
                     for (Car car : cars)
                     {
                         sb.append(car).append("\n");
-                        comboBox.addItem(car.plate);
+                        comboBox.addItem(car.id);
                     }
 
                     vehicleArea.setText(sb.toString());
