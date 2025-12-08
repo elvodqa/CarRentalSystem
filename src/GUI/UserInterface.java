@@ -21,10 +21,11 @@ public class UserInterface extends JFrame
     private static JTextField text1, text2, text3, text4, text5, text6, text7, text8, text9, text10, text11;
     private static JButton button1, button2, button3, button4, button5, button6, button7, button8, button9;
     private static JList <Car> listBox;
-    private static JList <RentalPeriod> invoice;
+    private static JList <String> invoice;
     private static JComboBox<Car> comboBox;
     private static DefaultListModel<Car> vehicles = new DefaultListModel<>();
-    private static DefaultListModel<RentalPeriod> invoiceModel = new DefaultListModel<>();
+    private static DefaultListModel<String> invoiceModel = new DefaultListModel<>();
+    private static JTextArea vehicleArea;
     private static java.awt.CardLayout cardLayout = new java.awt.CardLayout();
 
 
@@ -84,11 +85,15 @@ public class UserInterface extends JFrame
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setSize(100,100);
 
+        vehicleArea = new JTextArea();
+        vehicleArea.setVisible(true);
+        vehicleArea.setEditable(false);
+
         invoice = new JList<>(invoiceModel);
         invoice.setVisibleRowCount(-1);
         invoice.setVisible(true);
         invoice.setSize(100, 100);
-        JScrollPane scrollPane2 = new JScrollPane(invoice);
+        JScrollPane scrollPane2 = new JScrollPane(vehicleArea);
         scrollPane2.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollPane2.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPane2.setSize(100,100);
@@ -98,6 +103,7 @@ public class UserInterface extends JFrame
         comboBox = new JComboBox<>();
         comboBox.setSelectedIndex(-1);
         comboBox.setVisible(true);
+
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -354,14 +360,14 @@ public class UserInterface extends JFrame
 
                 if (command == "Generate Invoice")
                 {
-                    invoiceModel.clear();
-                    List<RentalPeriod> period = new ArrayList<>();
-                    period = db.getAllRentalByUserId(user.id);
+                    List<RentalPeriod> period = db.getAllRentalByUserId(user.id);
+                    StringBuilder sb = new StringBuilder();
 
-                    for(RentalPeriod rental : period)
-                    {
-                        invoiceModel.addElement(rental);
+                    for (RentalPeriod rental : period) {
+                        sb.append(db.generateInvoice(rental.id)).append("\n");
                     }
+
+                    vehicleArea.setText(sb.toString());
                 }
             }
         });
@@ -412,8 +418,11 @@ public class UserInterface extends JFrame
         card3.add(label7, gbc);
         gbc.gridx = 2; gbc.gridy = 0;
         card3.add(label8, gbc);
-        fieldSize = new Dimension (100, 100);
+        fieldSize = new Dimension (200, 200);
         gbc.gridwidth = 2;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        gbc.fill = GridBagConstraints.BOTH;
         gbc.gridx = 0; gbc.gridy = 1;
         card3.add(scrollPane, gbc);
         scrollPane.setPreferredSize(fieldSize);
@@ -421,6 +430,9 @@ public class UserInterface extends JFrame
         card3.add(scrollPane2, gbc);
         scrollPane2.setPreferredSize(fieldSize);
         gbc.gridwidth = 1;
+        gbc.weightx = 0.0;
+        gbc.weighty = 0.0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
         fieldSize = new Dimension (200, 30);
         gbc.gridx = 0; gbc.gridy = 2;
         card3.add(comboBox, gbc);
