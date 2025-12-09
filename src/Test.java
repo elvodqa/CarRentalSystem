@@ -13,6 +13,10 @@ public class Test {
             System.out.println(userInfo);
         }
 
+        db.getAllRentals();
+
+        db.getRentalPeriodsByCarId(1);
+
 
 
     }
