@@ -447,8 +447,6 @@ public class UserInterface extends JFrame
         logoutButton.setPreferredSize(fieldSize);
         gbc.gridwidth = 1;
 
-        // Ask for a initialUser's info function in backend
-
         cardPanel.add(card1, "1");
         cardPanel.add(card2, "2");
         cardPanel.add(card3, "3");
