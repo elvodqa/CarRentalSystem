@@ -20,7 +20,7 @@ public class EmployeeInterface extends JFrame implements ActionListener {
     JComboBox<String> carCombo;
     DefaultListModel<String> carListModel;
     JList<String> carList;
-    JButton loadCarsBtn, addCarBtn, updatePriceBtn;
+    JButton loadCarsBtn, addCarBtn, updatePriceBtn, deleteCarBtn;
 
     JComboBox<Integer> rentalIdCombo;
     JButton loadRentalsBtn, genInvoiceBtn, cancelRentalBtn;
@@ -58,6 +58,7 @@ public class EmployeeInterface extends JFrame implements ActionListener {
         loadCarsBtn = new JButton("Load Cars");
         addCarBtn = new JButton("Add Car");
         updatePriceBtn = new JButton("Update Car Price");
+        deleteCarBtn = new JButton("Delete Car");
 
         rentalIdCombo = new JComboBox<>();
         rentalIdCombo.setSelectedIndex(-1);
@@ -106,6 +107,7 @@ public class EmployeeInterface extends JFrame implements ActionListener {
         JPanel carBtnPanel = new JPanel();
         carBtnPanel.add(addCarBtn);
         carBtnPanel.add(updatePriceBtn);
+        carBtnPanel.add(deleteCarBtn);
         add(carBtnPanel, g);
 
         g.gridx = 0;
@@ -132,6 +134,7 @@ public class EmployeeInterface extends JFrame implements ActionListener {
         loadCarsBtn.addActionListener(this);
         addCarBtn.addActionListener(this);
         updatePriceBtn.addActionListener(this);
+        deleteCarBtn.addActionListener(this);
         loadRentalsBtn.addActionListener(this);
         genInvoiceBtn.addActionListener(this);
         cancelRentalBtn.addActionListener(this);
@@ -221,6 +224,23 @@ public class EmployeeInterface extends JFrame implements ActionListener {
                     }
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(this, "Invalid price.");
+                }
+            }
+        } else if (e.getSource() == deleteCarBtn) {
+            int idx = carList.getSelectedIndex();
+            if (idx == -1) {
+                JOptionPane.showMessageDialog(this, "Select a car first to delete.");
+                return;
+            }
+            List<Car> cars = db.getAllCars();
+            Car car = cars.get(idx);
+            int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete " + car.name + " " + car.model + "?", "Confirm Operation", JOptionPane.YES_NO_OPTION);
+            if (confirm == JOptionPane.YES_OPTION) {
+                if (db.deleteCarById(car.id)) {
+                    JOptionPane.showMessageDialog(this, "Car deleted.");
+                    actionPerformed(new ActionEvent(loadCarsBtn, 0, ""));
+                } else {
+                    JOptionPane.showMessageDialog(this, "Failed to delete car.");
                 }
             }
         } else if (e.getSource() == loadRentalsBtn) {
