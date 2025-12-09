@@ -314,7 +314,13 @@ public class UserInterface extends JFrame
 
                     for (Car car : cars)
                     {
-                        sb.append(car).append("\n");
+                        sb.append("Car ID: ").append(car.id).append("\n");
+                        sb.append("License Plate: ").append(car.plate).append("\n");
+                        sb.append("Model: ").append(car.model).append("\n");
+                        sb.append("Name: ").append(car.name).append("\n");
+                        sb.append("Color: ").append(car.color).append("\n");
+                        sb.append("Price Per Day: $").append(car.pricePerDay).append("\n");
+                        sb.append("-----------------------------\n");
                         vehicleSelectionComboBox.addItem(car.id);
                     }
 
