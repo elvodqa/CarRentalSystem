@@ -15,7 +15,7 @@ public class UserInterface extends JFrame
 {
     private static Database db;
     private static User user;
-    private static JPanel cardPanel, card1, card2, card3, card4;
+    private static JPanel cardPanel, card1, card2, card3;
 
     private static JLabel emailLabel, passwordLabel, firstNameLabel, lastNameLabel, secondEmailLabel, secondPasswordLabel,
             vehicleListLabel, invoiceLabel, vehicleSelectionLabel;
@@ -23,7 +23,7 @@ public class UserInterface extends JFrame
     private static JTextField emailText, passwordText, firstNameText, lastNameText, secondEmailText, secondPasswordText;
 
     private static JButton createAccountScreenButton, loginButton, createAccountButton, fromAccountToHomeButton, rentVehicleButton,
-            searchVehiclesButton, userInfoButton, generateInvoiceButton, backToHomeLogin;
+            searchVehiclesButton, userInfoButton, generateInvoiceButton, logoutButton;
 
     // private static JList <Car> listBox;
     private static JList <String> invoice;
@@ -67,7 +67,7 @@ public class UserInterface extends JFrame
         searchVehiclesButton = new JButton("Search Vehicles");
         userInfoButton = new JButton("User Info");
         generateInvoiceButton = new JButton("Generate Invoice");
-        backToHomeLogin = new JButton("Back to Login");
+        logoutButton = new JButton("Logout");
 
         emailText = new JTextField("",15);
         passwordText = new JTextField("",15);
@@ -76,15 +76,6 @@ public class UserInterface extends JFrame
         secondEmailText = new JTextField("",15);
         secondPasswordText = new JTextField("",15);
 
-        /*
-
-
-        listBox = new JList<>(vehicles);
-        listBox.setVisibleRowCount(-1);
-        listBox.setVisible(true);
-        listBox.setSize(100, 100);
-
-         */
 
         vehicleArea = new JTextArea();
         vehicleArea.setVisible(true);
@@ -98,13 +89,6 @@ public class UserInterface extends JFrame
         invoiceArea = new JTextArea();
         invoiceArea.setVisible(true);
         invoiceArea.setEditable(false);
-
-        /*
-        invoice = new JList<>(invoiceModel);
-        invoice.setVisibleRowCount(-1);
-        invoice.setVisible(true);
-        invoice.setSize(100, 100);
-        */
 
         JScrollPane invoiceScroll = new JScrollPane(invoiceArea);
         invoiceScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -328,7 +312,6 @@ public class UserInterface extends JFrame
                 if (command == "Search Vehicles")
                 {
 
-                    // vehicles.clear();
                     vehicleSelectionComboBox.removeAllItems();
                     List<Car> cars = db.getAllCars();
                     StringBuilder sb = new StringBuilder();
@@ -384,20 +367,18 @@ public class UserInterface extends JFrame
         generateInvoiceButton.setPreferredSize(fieldSize);
 
 
-        backToHomeLogin.addActionListener(new ActionListener()
+        logoutButton.addActionListener(new ActionListener()
         {
             @Override
             public void actionPerformed(ActionEvent e)
             {
                 String command = e.getActionCommand();
 
-                if (command == "Back to Login")
+                if (command == "Logout")
                 {
                     JOptionPane.showMessageDialog(null, "Logging out.");
-                   // vehicles.clear();
                     vehicleScroll.removeAll();
                     invoiceScroll.removeAll();
-                    // invoiceScroll.removeAll();
                     vehicleSelectionComboBox.removeAllItems();
                     cardLayout.show(cardPanel, "1");
                 }
@@ -460,8 +441,8 @@ public class UserInterface extends JFrame
         generateInvoiceButton.setPreferredSize(fieldSize);
         gbc.gridwidth = 2;
         gbc.gridx = 1; gbc.gridy = 4;
-        card3.add(backToHomeLogin, gbc);
-        backToHomeLogin.setPreferredSize(fieldSize);
+        card3.add(logoutButton, gbc);
+        logoutButton.setPreferredSize(fieldSize);
         gbc.gridwidth = 1;
 
         // Ask for a initialUser's info function in backend
