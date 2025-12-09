@@ -242,8 +242,8 @@ public class Database {
                 int id = resultSet.getInt("id");
                 int userId = resultSet.getInt("userId");
                 int carId = resultSet.getInt("carId");
-                java.sql.Date startDate = resultSet.getDate("startDate");
-                java.sql.Date endDate = resultSet.getDate("endDate");
+                Date startDate = resultSet.getDate("startDate");
+                Date endDate = resultSet.getDate("endDate");
                 rentals.add(new RentalPeriod(id, userId, carId, startDate, endDate));
             }
             System.out.println("Retrieved all rental periods from database.");
@@ -261,8 +261,8 @@ public class Database {
             while (resultSet.next()) {
                 int id = resultSet.getInt("id");
                 int carId = resultSet.getInt("carId");
-                java.sql.Date startDate = resultSet.getDate("startDate");
-                java.sql.Date endDate = resultSet.getDate("endDate");
+                Date startDate = resultSet.getDate("startDate");
+                Date endDate = resultSet.getDate("endDate");
                 rentals.add(new RentalPeriod(id, userId, carId, startDate, endDate));
             }
             System.out.println("Retrieved all rental periods for user ID: " + userId);
@@ -280,8 +280,8 @@ public class Database {
             while (resultSet.next()) {
                 int id = resultSet.getInt("id");
                 int userId = resultSet.getInt("userId");
-                java.sql.Date startDate = resultSet.getDate("startDate");
-                java.sql.Date endDate = resultSet.getDate("endDate");
+                Date startDate = resultSet.getDate("startDate");
+                Date endDate = resultSet.getDate("endDate");
                 rentals.add(new RentalPeriod(id, userId, carId, startDate, endDate));
             }
             System.out.println("Retrieved all rental periods for car ID: " + carId);
@@ -323,8 +323,8 @@ public class Database {
                 int id = resultSet.getInt("id");
                 int userId = resultSet.getInt("userId");
                 int carId = resultSet.getInt("carId");
-                java.sql.Date startDate = resultSet.getDate("startDate");
-                java.sql.Date endDate = resultSet.getDate("endDate");
+                Date startDate = resultSet.getDate("startDate");
+                Date endDate = resultSet.getDate("endDate");
                 rentalPeriod = new RentalPeriod(id, userId, carId, startDate, endDate);
             }
             System.out.println("Retrieved rental period with ID: " + rentalPeriodId);
@@ -407,8 +407,8 @@ public class Database {
                 String endDate = resultSet.getString("endDate");
                 double pricePerDay = resultSet.getDouble("price");
                 // Calculate total days
-                java.sql.Date start = java.sql.Date.valueOf(startDate);
-                java.sql.Date end = java.sql.Date.valueOf(endDate);
+                Date start = Date.valueOf(startDate);
+                Date end = Date.valueOf(endDate);
                 long diff = end.getTime() - start.getTime();
                 int totalDays = (int) (diff / (1000 * 60 * 60 * 24)) + 1;
                 double totalPrice = totalDays * pricePerDay;
@@ -438,8 +438,8 @@ public class Database {
             while (resultSet.next()) {
                 int id = resultSet.getInt("id");
                 int carId = resultSet.getInt("carId");
-                java.sql.Date startDate = resultSet.getDate("startDate");
-                java.sql.Date endDate = resultSet.getDate("endDate");
+                Date startDate = resultSet.getDate("startDate");
+                Date endDate = resultSet.getDate("endDate");
                 rentals.add(new RentalPeriod(id, userId, carId, startDate, endDate));
             }
             System.out.println("Retrieved rentals for user ID: " + userId);

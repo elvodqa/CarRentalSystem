@@ -2,6 +2,7 @@ package GUI;
 
 import Database.Database;
 import Models.Car;
+import Models.RentalPeriod;
 import Models.User;
 
 import javax.swing.*;
@@ -21,8 +22,8 @@ public class EmployeeInterface extends JFrame implements ActionListener {
     JList<String> carList;
     JButton loadCarsBtn, addCarBtn, updatePriceBtn;
 
-    JTextField rentalIdField;
-    JButton genInvoiceBtn, cancelRentalBtn;
+    JComboBox<Integer> rentalIdCombo;
+    JButton loadRentalsBtn, genInvoiceBtn, cancelRentalBtn;
     JTextArea invoiceArea;
 
     Database db;
@@ -58,7 +59,9 @@ public class EmployeeInterface extends JFrame implements ActionListener {
         addCarBtn = new JButton("Add Car");
         updatePriceBtn = new JButton("Update Car Price");
 
-        rentalIdField = new JTextField(10);
+        rentalIdCombo = new JComboBox<>();
+        rentalIdCombo.setSelectedIndex(-1);
+        loadRentalsBtn = new JButton("Load Rentals");
         genInvoiceBtn = new JButton("Generate Invoice");
         cancelRentalBtn = new JButton("Cancel Rental");
         invoiceArea = new JTextArea(6, 30);
@@ -109,7 +112,9 @@ public class EmployeeInterface extends JFrame implements ActionListener {
         g.gridy = 6;
         add(new JLabel("Rental ID"), g);
         g.gridx = 1;
-        add(rentalIdField, g);
+        add(rentalIdCombo, g);
+        g.gridx = 2;
+        add(loadRentalsBtn, g);
 
         g.gridx = 0;
         g.gridy = 7;
@@ -119,7 +124,7 @@ public class EmployeeInterface extends JFrame implements ActionListener {
 
         g.gridx = 0;
         g.gridy = 8;
-        g.gridwidth = 2;
+        g.gridwidth = 3;
         add(invoiceScroll, g);
 
         loadUsersBtn.addActionListener(this);
@@ -127,6 +132,7 @@ public class EmployeeInterface extends JFrame implements ActionListener {
         loadCarsBtn.addActionListener(this);
         addCarBtn.addActionListener(this);
         updatePriceBtn.addActionListener(this);
+        loadRentalsBtn.addActionListener(this);
         genInvoiceBtn.addActionListener(this);
         cancelRentalBtn.addActionListener(this);
 
@@ -217,36 +223,37 @@ public class EmployeeInterface extends JFrame implements ActionListener {
                     JOptionPane.showMessageDialog(this, "Invalid price.");
                 }
             }
+        } else if (e.getSource() == loadRentalsBtn) {
+            rentalIdCombo.removeAllItems();
+            List<RentalPeriod> rentals = db.getAllRentals();
+            for (RentalPeriod r : rentals) {
+                rentalIdCombo.addItem(r.id);
+            }
         } else if (e.getSource() == genInvoiceBtn) {
-            try {
-                int rentalId = Integer.parseInt(rentalIdField.getText());
+            Integer rentalId = (Integer) rentalIdCombo.getSelectedItem();
+            if (rentalId != null) {
                 String invoice = db.generateInvoice(rentalId);
                 invoiceArea.setText(invoice);
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "Invalid rental ID.");
+            } else {
+                JOptionPane.showMessageDialog(this, "Select a rental ID.");
             }
         } else if (e.getSource() == cancelRentalBtn) {
-            try {
-                int rentalId = Integer.parseInt(rentalIdField.getText());
+            Integer rentalId = (Integer) rentalIdCombo.getSelectedItem();
+            if (rentalId != null) {
                 if (db.cancelRental(rentalId)) {
                     JOptionPane.showMessageDialog(this, "Rental cancelled.");
                     invoiceArea.setText("");
+                    rentalIdCombo.removeItem(rentalId);
                 } else {
                     JOptionPane.showMessageDialog(this, "Failed to cancel rental.");
                 }
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "Invalid rental ID.");
+            } else {
+                JOptionPane.showMessageDialog(this, "Select a rental ID.");
             }
         }
     }
 
     public static void main(String[] args) {
-        try {
-            Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
-        } catch (ClassNotFoundException e) {
-            JOptionPane.showMessageDialog(null, "Database driver not found!");
-        }
-
         SwingUtilities.invokeLater(() -> {
             try {
                 Database db = new Database();
