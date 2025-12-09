@@ -25,11 +25,7 @@ public class UserInterface extends JFrame
     private static JButton createAccountScreenButton, loginButton, createAccountButton, fromAccountToHomeButton, rentVehicleButton,
             searchVehiclesButton, userInfoButton, generateInvoiceButton, logoutButton;
 
-    // private static JList <Car> listBox;
-    private static JList <String> invoice;
     private static JComboBox<Integer> vehicleSelectionComboBox;
-    private static DefaultListModel<Car> vehicles = new DefaultListModel<>();
-    private static DefaultListModel<String> invoiceModel = new DefaultListModel<>();
     private static JTextArea vehicleArea, invoiceArea;
     private static java.awt.CardLayout cardLayout = new java.awt.CardLayout();
 
