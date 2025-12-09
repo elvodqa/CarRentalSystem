@@ -234,6 +234,23 @@ public class Database {
         }
     }
 
+    public boolean deleteCarById(int carId) {
+        String deleteSql = "DELETE FROM " + CarTableName + " WHERE id = " + carId;
+        try (Statement statement = conn.createStatement()) {
+            int rowsAffected = statement.executeUpdate(deleteSql);
+            if (rowsAffected > 0) {
+                System.out.println("Car ID " + carId + " deleted successfully.");
+                return true;
+            } else {
+                System.out.println("No car found with ID: " + carId);
+                return false;
+            }
+        } catch (SQLException e) {
+            System.out.println("Error deleting car: " + e.getMessage());
+            return false;
+        }
+    }
+
     public Car getCarById(int carId) {
         Car car = null;
         String querySql = "SELECT * FROM " + CarTableName + " WHERE id = " + carId;
