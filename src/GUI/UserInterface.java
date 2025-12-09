@@ -379,8 +379,8 @@ public class UserInterface extends JFrame
                 if (command == "Logout")
                 {
                     JOptionPane.showMessageDialog(null, "Logging out.");
-                    vehicleScroll.removeAll();
-                    invoiceScroll.removeAll();
+                    vehicleArea.setText("");
+                    invoiceArea.setText("");
                     vehicleSelectionComboBox.removeAllItems();
                     cardLayout.show(cardPanel, "1");
                 }
