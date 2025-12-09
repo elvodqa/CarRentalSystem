@@ -8,7 +8,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -17,12 +16,18 @@ public class UserInterface extends JFrame
     private static Database db;
     private static User user;
     private static JPanel cardPanel, card1, card2, card3, card4;
-    private static JLabel label1, label2, label3, label4, label5, label6, label7, label8, label9;
-    private static JTextField text1, text2, text3, text4, text5, text6, text7, text8, text9, text10, text11;
-    private static JButton button1, button2, button3, button4, button5, button6, button7, button8, button9;
-    private static JList <Car> listBox;
+
+    private static JLabel emailLabel, passwordLabel, firstNameLabel, lastNameLabel, secondEmailLabel, secondPasswordLabel,
+            vehicleListLabel, invoiceLabel, vehicleSelectionLabel;
+
+    private static JTextField emailText, passwordText, firstNameText, lastNameText, secondEmailText, secondPasswordText;
+
+    private static JButton createAccountScreenButton, loginButton, createAccountButton, fromAccountToHomeButton, rentVehicleButton,
+            searchVehiclesButton, userInfoButton, generateInvoiceButton, backToHomeLogin;
+
+    // private static JList <Car> listBox;
     private static JList <String> invoice;
-    private static JComboBox<Integer> comboBox;
+    private static JComboBox<Integer> vehicleSelectionComboBox;
     private static DefaultListModel<Car> vehicles = new DefaultListModel<>();
     private static DefaultListModel<String> invoiceModel = new DefaultListModel<>();
     private static JTextArea vehicleArea, invoiceArea;
@@ -44,73 +49,71 @@ public class UserInterface extends JFrame
         card2 = new JPanel(new GridBagLayout());
         card3 = new JPanel(new GridBagLayout());
 
-        label1 = new JLabel("Email");
-        label2 = new JLabel("Password");
-        label3 = new JLabel("First Name");
-        label4 = new JLabel("Last Name");
-        label5 = new JLabel("Email Name");
-        label6 = new JLabel("Password");
-        label7 = new JLabel("List of Vehicles");
-        label8 = new JLabel("Invoice");
-        label9 = new JLabel("Vehicle Selection");
+        emailLabel = new JLabel("Email");
+        passwordLabel = new JLabel("Password");
+        firstNameLabel = new JLabel("First Name");
+        lastNameLabel = new JLabel("Last Name");
+        secondEmailLabel = new JLabel("Email Name");
+        secondPasswordLabel = new JLabel("Password");
+        vehicleListLabel = new JLabel("List of Vehicle(s)");
+        invoiceLabel = new JLabel("Invoice(s)");
+        vehicleSelectionLabel = new JLabel("Vehicle Selection by ID");
 
-        button1 = new JButton("Go to Create Account");
-        button2 = new JButton("Login");
-        button3 = new JButton("Create Account");
-        button4 = new JButton("Back to Home");
-        button5 = new JButton("Rent Vehicle");
-        button6 = new JButton("Search Vehicles");
-        button7 = new JButton("User Info");
-        button8 = new JButton("Generate Invoice");
-        button9 = new JButton("Back to Login");
+        createAccountScreenButton = new JButton("Go to Create Account");
+        loginButton = new JButton("Login");
+        createAccountButton = new JButton("Create Account");
+        fromAccountToHomeButton = new JButton("Back to Home");
+        rentVehicleButton = new JButton("Rent Vehicle");
+        searchVehiclesButton = new JButton("Search Vehicles");
+        userInfoButton = new JButton("User Info");
+        generateInvoiceButton = new JButton("Generate Invoice");
+        backToHomeLogin = new JButton("Back to Login");
 
-        text1 = new JTextField("",15);
-        text2 = new JTextField("",15);
-        text3 = new JTextField("",15);
-        text4 = new JTextField("",15);
-        text5 = new JTextField("",15);
-        text6 = new JTextField("",15);
-        text7 = new JTextField("",15);
-        text8 = new JTextField("",15);
-        text9 = new JTextField("",15);
-        text10 = new JTextField("",15);
-        text11 = new JTextField("",15);
+        emailText = new JTextField("",15);
+        passwordText = new JTextField("",15);
+        firstNameText = new JTextField("",15);
+        lastNameText = new JTextField("",15);
+        secondEmailText = new JTextField("",15);
+        secondPasswordText = new JTextField("",15);
+
+        /*
+
 
         listBox = new JList<>(vehicles);
         listBox.setVisibleRowCount(-1);
         listBox.setVisible(true);
         listBox.setSize(100, 100);
 
+         */
+
         vehicleArea = new JTextArea();
         vehicleArea.setVisible(true);
         vehicleArea.setEditable(false);
 
-        JScrollPane scrollPane = new JScrollPane(vehicleArea);
-        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        scrollPane.setSize(100,100);
+        JScrollPane vehicleScroll = new JScrollPane(vehicleArea);
+        vehicleScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        vehicleScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        vehicleScroll.setSize(100,100);
 
         invoiceArea = new JTextArea();
         invoiceArea.setVisible(true);
         invoiceArea.setEditable(false);
 
-
+        /*
         invoice = new JList<>(invoiceModel);
         invoice.setVisibleRowCount(-1);
         invoice.setVisible(true);
         invoice.setSize(100, 100);
+        */
 
-        JScrollPane scrollPane2 = new JScrollPane(invoiceArea);
-        scrollPane2.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        scrollPane2.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        scrollPane2.setSize(100,100);
-        
+        JScrollPane invoiceScroll = new JScrollPane(invoiceArea);
+        invoiceScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        invoiceScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        invoiceScroll.setSize(100,100);
 
-
-        comboBox = new JComboBox<>();
-        comboBox.setSelectedIndex(-1);
-        comboBox.setVisible(true);
-
+        vehicleSelectionComboBox = new JComboBox<>();
+        vehicleSelectionComboBox.setSelectedIndex(-1);
+        vehicleSelectionComboBox.setVisible(true);
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -121,38 +124,37 @@ public class UserInterface extends JFrame
         Dimension fieldSize = new Dimension(200, 30);
 
         gbc.gridx = 0; gbc.gridy = 0;
-        card1.add(label1,gbc);
-        label1.setPreferredSize(fieldSize);
+        card1.add(emailLabel,gbc);
+        emailLabel.setPreferredSize(fieldSize);
         gbc.gridx = 1; gbc.gridy = 0;
-        card1.add(text1,gbc);
-        text1.setPreferredSize(fieldSize);
+        card1.add(emailText,gbc);
+        emailText.setPreferredSize(fieldSize);
         gbc.gridx = 0; gbc.gridy = 1;
-        card1.add(label2,gbc);
-        label2.setPreferredSize(fieldSize);
+        card1.add(passwordLabel,gbc);
+        passwordLabel.setPreferredSize(fieldSize);
         gbc.gridx = 1; gbc.gridy = 1;
-        card1.add(text2,gbc);
-        text2.setPreferredSize(fieldSize);
-
+        card1.add(passwordText,gbc);
+        passwordText.setPreferredSize(fieldSize);
 
         gbc.gridx = 0; gbc.gridy = 0;
-        card2.add(label3,gbc);
+        card2.add(firstNameLabel,gbc);
         gbc.gridx = 1; gbc.gridy = 0;
-        card2.add(text3,gbc);
+        card2.add(firstNameText,gbc);
         gbc.gridx = 0; gbc.gridy = 1;
-        card2.add(label4,gbc);
+        card2.add(lastNameLabel,gbc);
         gbc.gridx = 1; gbc.gridy = 1;
-        card2.add(text4,gbc);
+        card2.add(lastNameText,gbc);
         gbc.gridx = 0; gbc.gridy = 2;
-        card2.add(label5, gbc);
+        card2.add(secondEmailLabel, gbc);
         gbc.gridx = 1; gbc.gridy = 2;
-        card2.add(text5, gbc);
+        card2.add(secondEmailText, gbc);
         gbc.gridx = 0; gbc.gridy = 3;
-        card2.add(label6, gbc);
+        card2.add(secondPasswordLabel, gbc);
         gbc.gridx = 1; gbc.gridy = 3;
-        card2.add(text6, gbc);
+        card2.add(secondPasswordText, gbc);
 
 
-        button1.addActionListener(new ActionListener() {
+        createAccountScreenButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e)
             {
@@ -161,19 +163,19 @@ public class UserInterface extends JFrame
                 if (command == "Go to Create Account")
                 {
                     cardLayout.show(cardPanel, "2");
-                    text1.setText("");
-                    text2.setText("");
-                    text3.setText("");
-                    text4.setText("");
-                    text5.setText("");
-                    text6.setText("");
+                    emailText.setText("");
+                    passwordText.setText("");
+                    firstNameText.setText("");
+                    lastNameText.setText("");
+                    secondEmailText.setText("");
+                    secondPasswordText.setText("");
                 }
             }
         });
-        button1.setPreferredSize(fieldSize);
+        createAccountScreenButton.setPreferredSize(fieldSize);
 
 
-        button2.addActionListener(new ActionListener() {
+        loginButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e)
             {
@@ -182,25 +184,25 @@ public class UserInterface extends JFrame
                 if (command == "Login")
                 {
                     boolean validation;
-                    if (text1.getText().isEmpty() || text2.getText().isEmpty())
+                    if (emailText.getText().isEmpty() || passwordText.getText().isEmpty())
                     {
                         JOptionPane.showMessageDialog(null, "Error found in adding account.");
                         return;
                     }
 
-                    validation = db.validateUser(text1.getText(), text2.getText());
+                    validation = db.validateUser(emailText.getText(), passwordText.getText());
                     if (validation == true)
                     {
                         JOptionPane.showMessageDialog(null, "Successfully logged in!");
-                        initialUser.email = text1.getText();
+                        initialUser.email = emailText.getText();
                         user = db.getUserByEmail(initialUser.email);
                         cardLayout.show(cardPanel, "3");
-                        text1.setText("");
-                        text2.setText("");
-                        text3.setText("");
-                        text4.setText("");
-                        text5.setText("");
-                        text6.setText("");
+                        emailText.setText("");
+                        passwordText.setText("");
+                        firstNameText.setText("");
+                        lastNameText.setText("");
+                        secondEmailText.setText("");
+                        secondPasswordText.setText("");
                     }
                     else
                     {
@@ -209,9 +211,9 @@ public class UserInterface extends JFrame
                 }
             }
         });
-        button2.setPreferredSize(fieldSize);
+        loginButton.setPreferredSize(fieldSize);
 
-        button3.addActionListener(new ActionListener() {
+        createAccountButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e)
             {
@@ -220,24 +222,24 @@ public class UserInterface extends JFrame
                 if (command == "Create Account")
                 {
                     boolean validation;
-                    if (text3.getText().isEmpty() || text4.getText().isEmpty() || text5.getText().isEmpty() || text6.getText().isEmpty())
+                    if (firstNameText.getText().isEmpty() || lastNameText.getText().isEmpty() || secondEmailText.getText().isEmpty() || secondPasswordText.getText().isEmpty())
                     {
                         JOptionPane.showMessageDialog(null, "Error found in adding account.");
                     }
                     else
                     {
-                        validation = db.createUser(text3.getText(), text4.getText(), text5.getText(), text6.getText());
+                        validation = db.createUser(firstNameText.getText(), lastNameText.getText(), secondEmailText.getText(), secondPasswordText.getText());
 
                         if (validation == true)
                         {
                             JOptionPane.showMessageDialog(null, "Account sucessfully created!");
                             cardLayout.show(cardPanel, "1");
-                            text1.setText("");
-                            text2.setText("");
-                            text3.setText("");
-                            text4.setText("");
-                            text5.setText("");
-                            text6.setText("");
+                            emailText.setText("");
+                            passwordText.setText("");
+                            firstNameText.setText("");
+                            lastNameText.setText("");
+                            secondEmailText.setText("");
+                            secondPasswordText.setText("");
                         }
                         else {
                             JOptionPane.showMessageDialog(null, "Error found in adding account.");
@@ -246,9 +248,9 @@ public class UserInterface extends JFrame
                 }
             }
         });
-        button3.setPreferredSize(fieldSize);
+        createAccountButton.setPreferredSize(fieldSize);
 
-        button4.addActionListener(new ActionListener()
+        fromAccountToHomeButton.addActionListener(new ActionListener()
         {
             @Override
             public void actionPerformed(ActionEvent e)
@@ -258,18 +260,18 @@ public class UserInterface extends JFrame
                 if (command == "Back to Home")
                 {
                     cardLayout.show(cardPanel, "1");
-                    text1.setText("");
-                    text2.setText("");
-                    text3.setText("");
-                    text4.setText("");
-                    text5.setText("");
-                    text6.setText("");
+                    emailText.setText("");
+                    passwordText.setText("");
+                    firstNameText.setText("");
+                    lastNameText.setText("");
+                    secondEmailText.setText("");
+                    secondPasswordText.setText("");
                 }
             }
         });
-        button4.setPreferredSize(fieldSize);
+        fromAccountToHomeButton.setPreferredSize(fieldSize);
 
-        button5.addActionListener(new ActionListener()
+        rentVehicleButton.addActionListener(new ActionListener()
         {
             @Override
             public void actionPerformed(ActionEvent e)
@@ -281,47 +283,42 @@ public class UserInterface extends JFrame
                     JTextField startDate = new JTextField();
                     JTextField endDate = new JTextField();
 
-                    Object[] message = {
-                            "Start date:", startDate,
-                            "End date:", endDate
-                    };
+                    Object[] message = {"Start date:", startDate, "End date:", endDate};
 
-                    int option = JOptionPane.showConfirmDialog(
-                            null,
-                            message,
-                            "Enter Values",
-                            JOptionPane.OK_CANCEL_OPTION
-                    );
+                    int option = JOptionPane.showConfirmDialog(null, message, "Enter Values",
+                            JOptionPane.OK_CANCEL_OPTION);
 
                     // Date.valueOf("2025-01-15");
                     // should be in this format
+
                     if (option == JOptionPane.OK_OPTION)
                     {
                         Date startDateSql = java.sql.Date.valueOf(startDate.getText());
                         Date endDateSql = java.sql.Date.valueOf(endDate.getText());
 
-                        int carID = (int) comboBox.getSelectedItem();
+                        int carID = (int) vehicleSelectionComboBox.getSelectedItem();
                         boolean rentalCreated = db.createRentalPeriod(user.id, carID, startDateSql, endDateSql);
+
                         if (rentalCreated)
                             {
-                            JOptionPane.showMessageDialog(null, "Rental created successfully!");
+                                JOptionPane.showMessageDialog(null, "Rental created successfully!");
                             }
                         else
                             {
-                            JOptionPane.showMessageDialog(null, "Error creating rental.");
+                                JOptionPane.showMessageDialog(null, "Error creating rental.");
                             }
                     }
+
                     else
                     {
                         System.out.println("User canceled");
                     }
-
                 }
             }
         });
-        button5.setPreferredSize(fieldSize);
+        rentVehicleButton.setPreferredSize(fieldSize);
 
-        button6.addActionListener(new ActionListener()
+        searchVehiclesButton.addActionListener(new ActionListener()
         {
             @Override
             public void actionPerformed(ActionEvent e)
@@ -330,24 +327,25 @@ public class UserInterface extends JFrame
 
                 if (command == "Search Vehicles")
                 {
+
                     // vehicles.clear();
-                    comboBox.removeAllItems();
+                    vehicleSelectionComboBox.removeAllItems();
                     List<Car> cars = db.getAllCars();
                     StringBuilder sb = new StringBuilder();
 
                     for (Car car : cars)
                     {
                         sb.append(car).append("\n");
-                        comboBox.addItem(car.id);
+                        vehicleSelectionComboBox.addItem(car.id);
                     }
 
                     vehicleArea.setText(sb.toString());
                 }
             }
         });
-        button6.setPreferredSize(fieldSize);
+        searchVehiclesButton.setPreferredSize(fieldSize);
 
-        button7.addActionListener(new ActionListener() {
+        userInfoButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e)
             {
@@ -362,9 +360,9 @@ public class UserInterface extends JFrame
                 }
             }
         });
-        button7.setPreferredSize(fieldSize);
+        userInfoButton.setPreferredSize(fieldSize);
 
-        button8.addActionListener(new ActionListener() {
+        generateInvoiceButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e)
             {
@@ -383,10 +381,10 @@ public class UserInterface extends JFrame
                 }
             }
         });
-        button8.setPreferredSize(fieldSize);
+        generateInvoiceButton.setPreferredSize(fieldSize);
 
 
-        button9.addActionListener(new ActionListener()
+        backToHomeLogin.addActionListener(new ActionListener()
         {
             @Override
             public void actionPerformed(ActionEvent e)
@@ -396,9 +394,11 @@ public class UserInterface extends JFrame
                 if (command == "Back to Login")
                 {
                     JOptionPane.showMessageDialog(null, "Logging out.");
-                    vehicles.clear();
-                    invoiceModel.clear();
-                    comboBox.removeAllItems();
+                   // vehicles.clear();
+                    vehicleScroll.removeAll();
+                    invoiceScroll.removeAll();
+                    // invoiceScroll.removeAll();
+                    vehicleSelectionComboBox.removeAllItems();
                     cardLayout.show(cardPanel, "1");
                 }
             }
@@ -409,57 +409,59 @@ public class UserInterface extends JFrame
 
 
         gbc.gridx = 0; gbc.gridy = 2;
-        card1.add(button1,gbc);
-        button1.setPreferredSize(fieldSize);
+        card1.add(createAccountScreenButton,gbc);
+        createAccountScreenButton.setPreferredSize(fieldSize);
         gbc.gridx = 1; gbc.gridy = 2;
-        card1.add(button2,gbc);
-        button2.setPreferredSize(fieldSize);
+        card1.add(loginButton,gbc);
+        loginButton.setPreferredSize(fieldSize);
 
         gbc.gridx = 0; gbc.gridy = 4;
-        card2.add(button3,gbc);
-        button1.setPreferredSize(fieldSize);
+        card2.add(createAccountButton,gbc);
+        createAccountScreenButton.setPreferredSize(fieldSize);
         gbc.gridx = 1; gbc.gridy = 4;
-        card2.add(button4,gbc);
-        button2.setPreferredSize(fieldSize);
+        card2.add(fromAccountToHomeButton,gbc);
+        loginButton.setPreferredSize(fieldSize);
 
         gbc.gridx = 0; gbc.gridy = 0;
-        card3.add(label7, gbc);
+        card3.add(vehicleListLabel, gbc);
         gbc.gridx = 2; gbc.gridy = 0;
-        card3.add(label8, gbc);
+        card3.add(invoiceLabel, gbc);
         fieldSize = new Dimension (200, 200);
         gbc.gridwidth = 2;
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
         gbc.fill = GridBagConstraints.BOTH;
         gbc.gridx = 0; gbc.gridy = 1;
-        card3.add(scrollPane, gbc);
-        scrollPane.setPreferredSize(fieldSize);
+        card3.add(vehicleScroll, gbc);
+        vehicleScroll.setPreferredSize(fieldSize);
         gbc.gridx = 2; gbc.gridy = 1;
-        card3.add(scrollPane2, gbc);
-        scrollPane2.setPreferredSize(fieldSize);
+        card3.add(invoiceScroll, gbc);
+        invoiceScroll.setPreferredSize(fieldSize);
         gbc.gridwidth = 1;
         gbc.weightx = 0.0;
         gbc.weighty = 0.0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         fieldSize = new Dimension (200, 30);
         gbc.gridx = 0; gbc.gridy = 2;
-        card3.add(comboBox, gbc);
+        card3.add(vehicleSelectionLabel, gbc);
+        gbc.gridx = 1; gbc.gridy = 2;
+        card3.add(vehicleSelectionComboBox, gbc);
         gbc.gridx = 0; gbc.gridy = 3;
-        card3.add(button5, gbc);
-        button5.setPreferredSize(fieldSize);
+        card3.add(rentVehicleButton, gbc);
+        rentVehicleButton.setPreferredSize(fieldSize);
         gbc.gridx = 1; gbc.gridy = 3;
-        card3.add(button6,gbc);
-        button6.setPreferredSize(fieldSize);
+        card3.add(searchVehiclesButton,gbc);
+        searchVehiclesButton.setPreferredSize(fieldSize);
         gbc.gridx = 2; gbc.gridy = 3;
-        card3.add(button7, gbc);
-        button7.setPreferredSize(fieldSize);
+        card3.add(userInfoButton, gbc);
+        userInfoButton.setPreferredSize(fieldSize);
         gbc.gridx = 3; gbc.gridy = 3;
-        card3.add(button8, gbc);
-        button8.setPreferredSize(fieldSize);
+        card3.add(generateInvoiceButton, gbc);
+        generateInvoiceButton.setPreferredSize(fieldSize);
         gbc.gridwidth = 2;
         gbc.gridx = 1; gbc.gridy = 4;
-        card3.add(button9, gbc);
-        button9.setPreferredSize(fieldSize);
+        card3.add(backToHomeLogin, gbc);
+        backToHomeLogin.setPreferredSize(fieldSize);
         gbc.gridwidth = 1;
 
         // Ask for a initialUser's info function in backend

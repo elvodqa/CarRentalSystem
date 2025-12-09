@@ -256,6 +256,4 @@ public class EmployeeInterface extends JFrame implements ActionListener {
             }
         });
     }
-
-
 }
