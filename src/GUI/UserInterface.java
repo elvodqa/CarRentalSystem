@@ -36,7 +36,7 @@ public class UserInterface extends JFrame
         this.user = initialUser;
 
         setTitle("User Interface");
-        setSize(900,600);
+        setSize(600,400);
 
         cardPanel = new JPanel();
         cardPanel.setLayout(cardLayout);
