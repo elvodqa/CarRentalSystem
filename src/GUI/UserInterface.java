@@ -170,6 +170,12 @@ public class UserInterface extends JFrame
                         return;
                     }
 
+                    else if (!emailText.getText().contains("@") || !emailText.getText().contains("."))
+                    {
+                        JOptionPane.showMessageDialog(null, "Invalid email.");
+                        return;
+                    }
+
                     validation = db.validateUser(emailText.getText(), passwordText.getText());
                     if (validation == true)
                     {
@@ -205,7 +211,14 @@ public class UserInterface extends JFrame
                     if (firstNameText.getText().isEmpty() || lastNameText.getText().isEmpty() || secondEmailText.getText().isEmpty() || secondPasswordText.getText().isEmpty())
                     {
                         JOptionPane.showMessageDialog(null, "Error found in adding account.");
+                        return;
                     }
+                    String email = secondEmailText.getText();
+                    if (!email.contains("@") || !email.contains(".")) {
+                        JOptionPane.showMessageDialog(null, "Invalid email.");
+                        return;
+                    }
+
                     else
                     {
                         validation = db.createUser(firstNameText.getText(), lastNameText.getText(), secondEmailText.getText(), secondPasswordText.getText());
