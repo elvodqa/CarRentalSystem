@@ -14,8 +14,9 @@ public class Database {
     public final String CarTableName = "Cars";
     public final String RentalPeriodTableName = "Rentals";
 
-    private String connectionString = "jdbc:derby:" + DbName + ";create=true";
+    private final String connectionString = "jdbc:derby:" + DbName + ";create=true";
     private Connection conn = null;
+
     public Database() {
         connect();
         if (createTables()) {
@@ -145,8 +146,7 @@ public class Database {
     public List<User> getAllUsers() {
         List<User> users = new ArrayList<>();
         String querySql = "SELECT * FROM " + UserTableName;
-        try (Statement statement = conn.createStatement();
-             var resultSet = statement.executeQuery(querySql)) {
+        try (Statement statement = conn.createStatement(); var resultSet = statement.executeQuery(querySql)) {
             while (resultSet.next()) {
                 int id = resultSet.getInt("id");
                 String firstName = resultSet.getString("firstName");
@@ -165,8 +165,7 @@ public class Database {
     public User getUserById(int userId) {
         User user = null;
         String querySql = "SELECT * FROM " + UserTableName + " WHERE id = " + userId;
-        try (Statement statement = conn.createStatement();
-             var resultSet = statement.executeQuery(querySql)) {
+        try (Statement statement = conn.createStatement(); var resultSet = statement.executeQuery(querySql)) {
             if (resultSet.next()) {
                 int id = resultSet.getInt("id");
                 String firstName = resultSet.getString("firstName");
@@ -185,8 +184,7 @@ public class Database {
     public User getUserByEmail(String email) {
         User user = null;
         String querySql = "SELECT * FROM " + UserTableName + " WHERE email = '" + email + "'";
-        try (Statement statement = conn.createStatement();
-             var resultSet = statement.executeQuery(querySql)) {
+        try (Statement statement = conn.createStatement(); var resultSet = statement.executeQuery(querySql)) {
             if (resultSet.next()) {
                 int id = resultSet.getInt("id");
                 String firstName = resultSet.getString("firstName");
@@ -200,7 +198,6 @@ public class Database {
         }
         return user;
     }
-
 
     public boolean banUser(int userId) {
         String deleteSql = "DELETE FROM " + UserTableName + " WHERE id = " + userId;
@@ -240,8 +237,7 @@ public class Database {
     public Car getCarById(int carId) {
         Car car = null;
         String querySql = "SELECT * FROM " + CarTableName + " WHERE id = " + carId;
-        try (Statement statement = conn.createStatement();
-             var resultSet = statement.executeQuery(querySql)) {
+        try (Statement statement = conn.createStatement(); var resultSet = statement.executeQuery(querySql)) {
             if (resultSet.next()) {
                 int id = resultSet.getInt("id");
                 String name = resultSet.getString("name");
@@ -355,8 +351,7 @@ public class Database {
     public List<RentalPeriod> getAllRentals() {
         List<RentalPeriod> rentals = new ArrayList<>();
         String querySql = "SELECT * FROM " + RentalPeriodTableName;
-        try (Statement statement = conn.createStatement();
-             var resultSet = statement.executeQuery(querySql)) {
+        try (Statement statement = conn.createStatement(); var resultSet = statement.executeQuery(querySql)) {
             while (resultSet.next()) {
                 int id = resultSet.getInt("id");
                 int userId = resultSet.getInt("userId");
@@ -375,8 +370,7 @@ public class Database {
     public List<RentalPeriod> getAllRentalByUserId(int userId) {
         List<RentalPeriod> rentals = new ArrayList<>();
         String querySql = "SELECT * FROM " + RentalPeriodTableName + " WHERE userId = " + userId;
-        try (Statement statement = conn.createStatement();
-             var resultSet = statement.executeQuery(querySql)) {
+        try (Statement statement = conn.createStatement(); var resultSet = statement.executeQuery(querySql)) {
             while (resultSet.next()) {
                 int id = resultSet.getInt("id");
                 int carId = resultSet.getInt("carId");
@@ -394,8 +388,7 @@ public class Database {
     public List<RentalPeriod> getRentalPeriodsByCarId(int carId) {
         List<RentalPeriod> rentals = new ArrayList<>();
         String querySql = "SELECT * FROM " + RentalPeriodTableName + " WHERE carId = " + carId;
-        try (Statement statement = conn.createStatement();
-             var resultSet = statement.executeQuery(querySql)) {
+        try (Statement statement = conn.createStatement(); var resultSet = statement.executeQuery(querySql)) {
             while (resultSet.next()) {
                 int id = resultSet.getInt("id");
                 int userId = resultSet.getInt("userId");
@@ -436,8 +429,7 @@ public class Database {
     public RentalPeriod getRentalPeriodById(int rentalPeriodId) {
         RentalPeriod rentalPeriod = null;
         String querySql = "SELECT * FROM " + RentalPeriodTableName + " WHERE id = " + rentalPeriodId;
-        try (Statement statement = conn.createStatement();
-             var resultSet = statement.executeQuery(querySql)) {
+        try (Statement statement = conn.createStatement(); var resultSet = statement.executeQuery(querySql)) {
             if (resultSet.next()) {
                 int id = resultSet.getInt("id");
                 int userId = resultSet.getInt("userId");
@@ -490,8 +482,7 @@ public class Database {
     public List<RentalPeriod> getUserRentals(int userId) {
         List<RentalPeriod> rentals = new ArrayList<>();
         String querySql = "SELECT * FROM " + RentalPeriodTableName + " WHERE userId = " + userId;
-        try (Statement statement = conn.createStatement();
-             var resultSet = statement.executeQuery(querySql)) {
+        try (Statement statement = conn.createStatement(); var resultSet = statement.executeQuery(querySql)) {
             while (resultSet.next()) {
                 int id = resultSet.getInt("id");
                 int carId = resultSet.getInt("carId");
@@ -533,7 +524,7 @@ public class Database {
                 "WHERE r.id = " + rentalId;
         String invoice = "";
         try (Statement statement = conn.createStatement();
-                var resultSet = statement.executeQuery(stuffSql)) {
+             var resultSet = statement.executeQuery(stuffSql)) {
             if (resultSet.next()) {
                 String firstName = resultSet.getString("firstName");
                 String lastName = resultSet.getString("lastName");
