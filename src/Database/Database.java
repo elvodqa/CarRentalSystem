@@ -86,7 +86,9 @@ public class Database {
         return result;
     }
 
-
+    // -------------------------------------
+    // ---------- User Methods -------------
+    // -------------------------------------
 
     // Returns true on success, false on failure
     public boolean createUser(String firstName, String lastName, String email, String password) {
@@ -139,19 +141,6 @@ public class Database {
         }
     }
 
-    public boolean createCar(String name, String model, String plate, String color, double price) {
-        String insertSql = "INSERT INTO " + CarTableName +
-                " (name, model, plate, color, price) VALUES ('" +
-                name + "', '" + model + "', '" + plate + "', '" + color + "', " + price + ")";
-        try (Statement statement = conn.createStatement()) {
-            statement.executeUpdate(insertSql);
-            System.out.println("New car added: " + name + " " + model);
-            return true;
-        } catch (SQLException e) {
-            System.out.println("Error adding new car: " + e.getMessage());
-            return false;
-        }
-    }
 
     public List<User> getAllUsers() {
         List<User> users = new ArrayList<>();
@@ -212,6 +201,42 @@ public class Database {
         return user;
     }
 
+
+    public boolean banUser(int userId) {
+        String deleteSql = "DELETE FROM " + UserTableName + " WHERE id = " + userId;
+        try (Statement statement = conn.createStatement()) {
+            int rowsAffected = statement.executeUpdate(deleteSql);
+            if (rowsAffected > 0) {
+                System.out.println("User ID " + userId + " banned successfully.");
+                return true;
+            } else {
+                System.out.println("No user found with ID: " + userId);
+                return false;
+            }
+        } catch (SQLException e) {
+            System.out.println("Error banning user: " + e.getMessage());
+            return false;
+        }
+    }
+
+    // -------------------------------------
+    // ---------- Car Methods -------------
+    // -------------------------------------
+
+    public boolean createCar(String name, String model, String plate, String color, double price) {
+        String insertSql = "INSERT INTO " + CarTableName +
+                " (name, model, plate, color, price) VALUES ('" +
+                name + "', '" + model + "', '" + plate + "', '" + color + "', " + price + ")";
+        try (Statement statement = conn.createStatement()) {
+            statement.executeUpdate(insertSql);
+            System.out.println("New car added: " + name + " " + model);
+            return true;
+        } catch (SQLException e) {
+            System.out.println("Error adding new car: " + e.getMessage());
+            return false;
+        }
+    }
+
     public Car getCarById(int carId) {
         Car car = null;
         String querySql = "SELECT * FROM " + CarTableName + " WHERE id = " + carId;
@@ -232,6 +257,100 @@ public class Database {
         }
         return car;
     }
+
+
+    public List<Car> getAllCars() {
+        List<Car> cars = new ArrayList<>();
+        String querySql = "SELECT * FROM " + CarTableName;
+        try (Statement statement = conn.createStatement();
+             var resultSet = statement.executeQuery(querySql)) {
+            while (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                String name = resultSet.getString("name");
+                String model = resultSet.getString("model");
+                String plate = resultSet.getString("plate");
+                String color = resultSet.getString("color");
+                double price = resultSet.getDouble("price");
+                cars.add(new Car(id, name, model, plate, color, price));
+            }
+            System.out.println("Retrieved all cars from database.");
+        } catch (SQLException e) {
+            System.out.println("Error retrieving cars: " + e.getMessage());
+        }
+        return cars;
+    }
+
+    public boolean updateCarPrice(int carId, double newPrice) {
+        String updateSql = "UPDATE " + CarTableName + " SET price = " + newPrice + " WHERE id = " + carId;
+        try (Statement statement = conn.createStatement()) {
+            int rowsAffected = statement.executeUpdate(updateSql);
+            if (rowsAffected > 0) {
+                System.out.println("Car ID " + carId + " price updated to $" + newPrice);
+                return true;
+            } else {
+                System.out.println("No car found with ID: " + carId);
+                return false;
+            }
+        } catch (SQLException e) {
+            System.out.println("Error updating car price: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean updateCarColor(int carId, String newColor) {
+        String updateSql = "UPDATE " + CarTableName + " SET color = '" + newColor + "' WHERE id = " + carId;
+        try (Statement statement = conn.createStatement()) {
+            int rowsAffected = statement.executeUpdate(updateSql);
+            if (rowsAffected > 0) {
+                System.out.println("Car ID " + carId + " color updated to " + newColor);
+                return true;
+            } else {
+                System.out.println("No car found with ID: " + carId);
+                return false;
+            }
+        } catch (SQLException e) {
+            System.out.println("Error updating car color: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean updateCarName(int carId, String newName) {
+        String updateSql = "UPDATE " + CarTableName + " SET name = '" + newName + "' WHERE id = " + carId;
+        try (Statement statement = conn.createStatement()) {
+            int rowsAffected = statement.executeUpdate(updateSql);
+            if (rowsAffected > 0) {
+                System.out.println("Car ID " + carId + " name updated to " + newName);
+                return true;
+            } else {
+                System.out.println("No car found with ID: " + carId);
+                return false;
+            }
+        } catch (SQLException e) {
+            System.out.println("Error updating car name: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean updateCarPlate(int carId, String newPlate) {
+        String updateSql = "UPDATE " + CarTableName + " SET plate = '" + newPlate + "' WHERE id = " + carId;
+        try (Statement statement = conn.createStatement()) {
+            int rowsAffected = statement.executeUpdate(updateSql);
+            if (rowsAffected > 0) {
+                System.out.println("Car ID " + carId + " plate updated to " + newPlate);
+                return true;
+            } else {
+                System.out.println("No car found with ID: " + carId);
+                return false;
+            }
+        } catch (SQLException e) {
+            System.out.println("Error updating car plate: " + e.getMessage());
+            return false;
+        }
+    }
+
+    // -------------------------------------
+    // ------ Rental Period Methods -------
+    // -------------------------------------
 
     public List<RentalPeriod> getAllRentals() {
         List<RentalPeriod> rentals = new ArrayList<>();
@@ -334,27 +453,6 @@ public class Database {
         return rentalPeriod;
     }
 
-    public List<Car> getAllCars() {
-        List<Car> cars = new ArrayList<>();
-        String querySql = "SELECT * FROM " + CarTableName;
-        try (Statement statement = conn.createStatement();
-             var resultSet = statement.executeQuery(querySql)) {
-            while (resultSet.next()) {
-                int id = resultSet.getInt("id");
-                String name = resultSet.getString("name");
-                String model = resultSet.getString("model");
-                String plate = resultSet.getString("plate");
-                String color = resultSet.getString("color");
-                double price = resultSet.getDouble("price");
-                cars.add(new Car(id, name, model, plate, color, price));
-            }
-            System.out.println("Retrieved all cars from database.");
-        } catch (SQLException e) {
-            System.out.println("Error retrieving cars: " + e.getMessage());
-        }
-        return cars;
-    }
-
     public boolean createRentalPeriod(int userId, int carId, Date startDate, Date endDate) {
         String overlapSql = "SELECT COUNT(*) FROM " + RentalPeriodTableName +
                 " WHERE carId = ? AND NOT (endDate < ? OR startDate > ?)";
@@ -389,6 +487,44 @@ public class Database {
         }
     }
 
+    public List<RentalPeriod> getUserRentals(int userId) {
+        List<RentalPeriod> rentals = new ArrayList<>();
+        String querySql = "SELECT * FROM " + RentalPeriodTableName + " WHERE userId = " + userId;
+        try (Statement statement = conn.createStatement();
+             var resultSet = statement.executeQuery(querySql)) {
+            while (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                int carId = resultSet.getInt("carId");
+                Date startDate = resultSet.getDate("startDate");
+                Date endDate = resultSet.getDate("endDate");
+                rentals.add(new RentalPeriod(id, userId, carId, startDate, endDate));
+            }
+            System.out.println("Retrieved rentals for user ID: " + userId);
+        } catch (SQLException e) {
+            System.out.println("Error retrieving user rentals: " + e.getMessage());
+        }
+        return rentals;
+    }
+
+
+    public boolean cancelRental(int rentalId) {
+        String deleteSql = "DELETE FROM " + RentalPeriodTableName + " WHERE id = " + rentalId;
+        try (Statement statement = conn.createStatement()) {
+            int rowsAffected = statement.executeUpdate(deleteSql);
+            if (rowsAffected > 0) {
+                System.out.println("Rental ID " + rentalId + " cancelled successfully.");
+                return true;
+            } else {
+                System.out.println("No rental found with ID: " + rentalId);
+                return false;
+            }
+        } catch (SQLException e) {
+            System.out.println("Error cancelling rental: " + e.getMessage());
+            return false;
+        }
+    }
+
+    // INVOICE
     public String generateInvoice(int rentalId) {
         String stuffSql = "SELECT r.id, u.firstName, u.lastName, c.name, c.model, r.startDate, r.endDate, c.price " +
                 "FROM " + RentalPeriodTableName + " r " +
@@ -410,7 +546,7 @@ public class Database {
                 Date start = Date.valueOf(startDate);
                 Date end = Date.valueOf(endDate);
                 long diff = end.getTime() - start.getTime();
-                int totalDays = (int) (diff / (1000 * 60 * 60 * 24)) + 1;
+                int totalDays = (int) (diff / (1000 * 60 * 60 * 24)) + 1; // +1 to include both days
                 double totalPrice = totalDays * pricePerDay;
 
                 invoice += "Invoice for Rental ID: " + rentalId + "\n";
@@ -430,25 +566,6 @@ public class Database {
         return invoice;
     }
 
-    public List<RentalPeriod> getUserRentals(int userId) {
-        List<RentalPeriod> rentals = new ArrayList<>();
-        String querySql = "SELECT * FROM " + RentalPeriodTableName + " WHERE userId = " + userId;
-        try (Statement statement = conn.createStatement();
-             var resultSet = statement.executeQuery(querySql)) {
-            while (resultSet.next()) {
-                int id = resultSet.getInt("id");
-                int carId = resultSet.getInt("carId");
-                Date startDate = resultSet.getDate("startDate");
-                Date endDate = resultSet.getDate("endDate");
-                rentals.add(new RentalPeriod(id, userId, carId, startDate, endDate));
-            }
-            System.out.println("Retrieved rentals for user ID: " + userId);
-        } catch (SQLException e) {
-            System.out.println("Error retrieving user rentals: " + e.getMessage());
-        }
-        return rentals;
-    }
-
     public void close() {
         try {
             if (conn != null && !conn.isClosed()) {
@@ -457,108 +574,6 @@ public class Database {
             }
         } catch (SQLException e) {
             System.out.println("Error closing database connection: " + e.getMessage());
-        }
-    }
-
-    public boolean cancelRental(int rentalId) {
-        String deleteSql = "DELETE FROM " + RentalPeriodTableName + " WHERE id = " + rentalId;
-        try (Statement statement = conn.createStatement()) {
-            int rowsAffected = statement.executeUpdate(deleteSql);
-            if (rowsAffected > 0) {
-                System.out.println("Rental ID " + rentalId + " cancelled successfully.");
-                return true;
-            } else {
-                System.out.println("No rental found with ID: " + rentalId);
-                return false;
-            }
-        } catch (SQLException e) {
-            System.out.println("Error cancelling rental: " + e.getMessage());
-            return false;
-        }
-    }
-
-    public boolean banUser(int userId) {
-        String deleteSql = "DELETE FROM " + UserTableName + " WHERE id = " + userId;
-        try (Statement statement = conn.createStatement()) {
-            int rowsAffected = statement.executeUpdate(deleteSql);
-            if (rowsAffected > 0) {
-                System.out.println("User ID " + userId + " banned successfully.");
-                return true;
-            } else {
-                System.out.println("No user found with ID: " + userId);
-                return false;
-            }
-        } catch (SQLException e) {
-            System.out.println("Error banning user: " + e.getMessage());
-            return false;
-        }
-    }
-
-    public boolean updateCarPrice(int carId, double newPrice) {
-        String updateSql = "UPDATE " + CarTableName + " SET price = " + newPrice + " WHERE id = " + carId;
-        try (Statement statement = conn.createStatement()) {
-            int rowsAffected = statement.executeUpdate(updateSql);
-            if (rowsAffected > 0) {
-                System.out.println("Car ID " + carId + " price updated to $" + newPrice);
-                return true;
-            } else {
-                System.out.println("No car found with ID: " + carId);
-                return false;
-            }
-        } catch (SQLException e) {
-            System.out.println("Error updating car price: " + e.getMessage());
-            return false;
-        }
-    }
-
-    public boolean updateCarColor(int carId, String newColor) {
-        String updateSql = "UPDATE " + CarTableName + " SET color = '" + newColor + "' WHERE id = " + carId;
-        try (Statement statement = conn.createStatement()) {
-            int rowsAffected = statement.executeUpdate(updateSql);
-            if (rowsAffected > 0) {
-                System.out.println("Car ID " + carId + " color updated to " + newColor);
-                return true;
-            } else {
-                System.out.println("No car found with ID: " + carId);
-                return false;
-            }
-        } catch (SQLException e) {
-            System.out.println("Error updating car color: " + e.getMessage());
-            return false;
-        }
-    }
-
-    public boolean updateCarName(int carId, String newName) {
-        String updateSql = "UPDATE " + CarTableName + " SET name = '" + newName + "' WHERE id = " + carId;
-        try (Statement statement = conn.createStatement()) {
-            int rowsAffected = statement.executeUpdate(updateSql);
-            if (rowsAffected > 0) {
-                System.out.println("Car ID " + carId + " name updated to " + newName);
-                return true;
-            } else {
-                System.out.println("No car found with ID: " + carId);
-                return false;
-            }
-        } catch (SQLException e) {
-            System.out.println("Error updating car name: " + e.getMessage());
-            return false;
-        }
-    }
-
-    public boolean updateCarPlate(int carId, String newPlate) {
-        String updateSql = "UPDATE " + CarTableName + " SET plate = '" + newPlate + "' WHERE id = " + carId;
-        try (Statement statement = conn.createStatement()) {
-            int rowsAffected = statement.executeUpdate(updateSql);
-            if (rowsAffected > 0) {
-                System.out.println("Car ID " + carId + " plate updated to " + newPlate);
-                return true;
-            } else {
-                System.out.println("No car found with ID: " + carId);
-                return false;
-            }
-        } catch (SQLException e) {
-            System.out.println("Error updating car plate: " + e.getMessage());
-            return false;
         }
     }
 }
