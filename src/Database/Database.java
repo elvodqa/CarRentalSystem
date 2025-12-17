@@ -35,6 +35,7 @@ public class Database {
         }
     }
 
+    // Creates tables, returns true on success
     public boolean createTables() {
         boolean result = true;
 
@@ -95,9 +96,9 @@ public class Database {
     public boolean createUser(String firstName, String lastName, String email, String password) {
         // Check if email already exists
         String checkSql = "SELECT COUNT(*) FROM " + UserTableName + " WHERE email = ?";
-        try (PreparedStatement checkStmt = conn.prepareStatement(checkSql)) {
-            checkStmt.setString(1, email);
-            try (ResultSet rs = checkStmt.executeQuery()) {
+        try (PreparedStatement statement = conn.prepareStatement(checkSql)) {
+            statement.setString(1, email);
+            try (ResultSet rs = statement.executeQuery()) {
                 if (rs.next() && rs.getInt(1) > 0) {
                     System.out.println("User with email " + email + " already exists");
                     return false;
@@ -109,12 +110,12 @@ public class Database {
         }
 
         String insertSql = "INSERT INTO " + UserTableName + " (firstName, lastName, email, password) VALUES (?, ?, ?, ?)";
-        try (PreparedStatement insertStmt = conn.prepareStatement(insertSql)) {
-            insertStmt.setString(1, firstName);
-            insertStmt.setString(2, lastName);
-            insertStmt.setString(3, email);
-            insertStmt.setString(4, password);
-            insertStmt.executeUpdate();
+        try (PreparedStatement statement = conn.prepareStatement(insertSql)) {
+            statement.setString(1, firstName);
+            statement.setString(2, lastName);
+            statement.setString(3, email);
+            statement.setString(4, password);
+            statement.executeUpdate();
             System.out.println("New user added: " + firstName + " " + lastName);
             return true;
         } catch (SQLException e) {
@@ -142,7 +143,7 @@ public class Database {
         }
     }
 
-
+    // Returns all the users in database
     public List<User> getAllUsers() {
         List<User> users = new ArrayList<>();
         String querySql = "SELECT * FROM " + UserTableName;
@@ -162,6 +163,7 @@ public class Database {
         return users;
     }
 
+    // Gets user by an id given its valid, returns null on failure
     public User getUserById(int userId) {
         User user = null;
         String querySql = "SELECT * FROM " + UserTableName + " WHERE id = " + userId;
@@ -181,6 +183,7 @@ public class Database {
         return user;
     }
 
+    // gets user by an email given its valid, returns null on failure
     public User getUserByEmail(String email) {
         User user = null;
         String querySql = "SELECT * FROM " + UserTableName + " WHERE email = '" + email + "'";
@@ -199,6 +202,7 @@ public class Database {
         return user;
     }
 
+    // deletes user from database given the id is valid, returns true on success
     public boolean banUser(int userId) {
         String deleteSql = "DELETE FROM " + UserTableName + " WHERE id = " + userId;
         try (Statement statement = conn.createStatement()) {
@@ -220,6 +224,7 @@ public class Database {
     // ---------- Car Methods -------------
     // -------------------------------------
 
+    // Creates are car with given parameters, returns true on success
     public boolean createCar(String name, String model, String plate, String color, double price) {
         String insertSql = "INSERT INTO " + CarTableName +
                 " (name, model, plate, color, price) VALUES ('" +
@@ -234,6 +239,7 @@ public class Database {
         }
     }
 
+    // Deletes a car in database given a valid ID, returns true on success
     public boolean deleteCarById(int carId) {
         String deleteSql = "DELETE FROM " + CarTableName + " WHERE id = " + carId;
         try (Statement statement = conn.createStatement()) {
@@ -251,6 +257,7 @@ public class Database {
         }
     }
 
+    // Gets a car from the database given a valid id
     public Car getCarById(int carId) {
         Car car = null;
         String querySql = "SELECT * FROM " + CarTableName + " WHERE id = " + carId;
@@ -271,12 +278,11 @@ public class Database {
         return car;
     }
 
-
+    // gets all the car from database
     public List<Car> getAllCars() {
         List<Car> cars = new ArrayList<>();
         String querySql = "SELECT * FROM " + CarTableName;
-        try (Statement statement = conn.createStatement();
-             var resultSet = statement.executeQuery(querySql)) {
+        try (Statement statement = conn.createStatement(); var resultSet = statement.executeQuery(querySql)) {
             while (resultSet.next()) {
                 int id = resultSet.getInt("id");
                 String name = resultSet.getString("name");
@@ -293,6 +299,7 @@ public class Database {
         return cars;
     }
 
+    // Updates a car's price given the car's id and the new price, returns true on success
     public boolean updateCarPrice(int carId, double newPrice) {
         String updateSql = "UPDATE " + CarTableName + " SET price = " + newPrice + " WHERE id = " + carId;
         try (Statement statement = conn.createStatement()) {
@@ -310,6 +317,7 @@ public class Database {
         }
     }
 
+    // Updates a car's color given the car's id and the new color, returns true on success
     public boolean updateCarColor(int carId, String newColor) {
         String updateSql = "UPDATE " + CarTableName + " SET color = '" + newColor + "' WHERE id = " + carId;
         try (Statement statement = conn.createStatement()) {
@@ -327,6 +335,7 @@ public class Database {
         }
     }
 
+    // Updates a car's name given the car's id and the new name, returns true on success
     public boolean updateCarName(int carId, String newName) {
         String updateSql = "UPDATE " + CarTableName + " SET name = '" + newName + "' WHERE id = " + carId;
         try (Statement statement = conn.createStatement()) {
@@ -344,6 +353,7 @@ public class Database {
         }
     }
 
+    // Updates a car's plate number given the car's id and the new plate number, returns true on success
     public boolean updateCarPlate(int carId, String newPlate) {
         String updateSql = "UPDATE " + CarTableName + " SET plate = '" + newPlate + "' WHERE id = " + carId;
         try (Statement statement = conn.createStatement()) {
@@ -365,6 +375,7 @@ public class Database {
     // ------ Rental Period Methods -------
     // -------------------------------------
 
+    // Returns all rentals in the database
     public List<RentalPeriod> getAllRentals() {
         List<RentalPeriod> rentals = new ArrayList<>();
         String querySql = "SELECT * FROM " + RentalPeriodTableName;
@@ -384,6 +395,7 @@ public class Database {
         return rentals;
     }
 
+    // Returns all rental periods associated with a user id
     public List<RentalPeriod> getAllRentalByUserId(int userId) {
         List<RentalPeriod> rentals = new ArrayList<>();
         String querySql = "SELECT * FROM " + RentalPeriodTableName + " WHERE userId = " + userId;
@@ -402,6 +414,7 @@ public class Database {
         return rentals;
     }
 
+    // Returns all rental periods associated with a car id
     public List<RentalPeriod> getRentalPeriodsByCarId(int carId) {
         List<RentalPeriod> rentals = new ArrayList<>();
         String querySql = "SELECT * FROM " + RentalPeriodTableName + " WHERE carId = " + carId;
@@ -420,6 +433,7 @@ public class Database {
         return rentals;
     }
 
+    // Deletes the rental period given its id, returns the deleted rental period
     public RentalPeriod deleteRentalPeriodById(int rentalPeriodId) {
         RentalPeriod rentalPeriod = getRentalPeriodById(rentalPeriodId);
         if (rentalPeriod == null) {
@@ -443,6 +457,7 @@ public class Database {
         }
     }
 
+    // Returns rental period given a valid rental period id
     public RentalPeriod getRentalPeriodById(int rentalPeriodId) {
         RentalPeriod rentalPeriod = null;
         String querySql = "SELECT * FROM " + RentalPeriodTableName + " WHERE id = " + rentalPeriodId;
@@ -462,6 +477,7 @@ public class Database {
         return rentalPeriod;
     }
 
+    // Creates a rental period given a user id, car id, start date and end date
     public boolean createRentalPeriod(int userId, int carId, Date startDate, Date endDate) {
         String overlapSql = "SELECT COUNT(*) FROM " + RentalPeriodTableName +
                 " WHERE carId = ? AND NOT (endDate < ? OR startDate > ?)";
@@ -496,6 +512,7 @@ public class Database {
         }
     }
 
+    // Gets all rental periods given a valid userid
     public List<RentalPeriod> getUserRentals(int userId) {
         List<RentalPeriod> rentals = new ArrayList<>();
         String querySql = "SELECT * FROM " + RentalPeriodTableName + " WHERE userId = " + userId;
@@ -514,7 +531,7 @@ public class Database {
         return rentals;
     }
 
-
+    // Cancels rental period given a valid rental id, returns true on success
     public boolean cancelRental(int rentalId) {
         String deleteSql = "DELETE FROM " + RentalPeriodTableName + " WHERE id = " + rentalId;
         try (Statement statement = conn.createStatement()) {
@@ -532,7 +549,7 @@ public class Database {
         }
     }
 
-    // INVOICE
+    // Generate and returns invoice string given a valid rental ID
     public String generateInvoice(int rentalId) {
         String stuffSql = "SELECT r.id, u.firstName, u.lastName, c.name, c.model, r.startDate, r.endDate, c.price " +
                 "FROM " + RentalPeriodTableName + " r " +
